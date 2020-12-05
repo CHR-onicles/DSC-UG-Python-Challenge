@@ -1,3 +1,10 @@
+"""
+Author: CHR-onicles
+Date: 05/12/2020
+
+DSC UG Python Challenge.
+"""
+
 from tkinter import *
 from tkcalendar import *
 from PIL import Image, ImageTk
@@ -26,6 +33,7 @@ root.configure(bg='#5fc29e')
 cal_window = None
 first_time_open = False
 date_from_calendar = ''
+date_from_calendar2 = ''
 
 
 # Defining command functions and event functions
@@ -101,7 +109,7 @@ def open_calendar(canvas):
     :param: canvas
     """
 
-    global first_time_open, cal_window, calc_payment_button
+    global first_time_open, cal_window
     # calc_payment_button.config(state=DISABLED)  # Trying to disable calculate payment button when
     #   calendar is open... requires way more code, so will use another kind of check.
 
@@ -126,16 +134,22 @@ def open_calendar(canvas):
             """
             Describe function here
             """
-            global cal_window, selected_label, date_from_calendar
-            print(cal.get_date())
-            date_from_calendar = cal.get_date()
+            global cal_window, selected_label, date_from_calendar, date_from_calendar2
+            if canvas == top_canvas:
+                date_from_calendar = cal.get_date()
 
-            # rearranging of date format YYYY/MM/DD
-            temp = date_from_calendar.split('/')
-            print(temp)
-            temp2 = temp[1] + '/' + temp[0] + '/' + temp[2]
-            date_from_calendar = temp2
-            print(date_from_calendar)
+                # rearranging of date format to: YYYY/MM/DD
+                temp = date_from_calendar.split('/')
+                temp2 = temp[1] + '/' + temp[0] + '/' + temp[2]
+                date_from_calendar = temp2
+            elif canvas == middle_canvas:
+                date_from_calendar2 = cal.get_date()
+
+                # rearranging of date format to: YYYY/MM/DD
+                temp = date_from_calendar2.split('/')
+                temp2 = temp[1] + '/' + temp[0] + '/' + temp[2]
+                date_from_calendar2 = temp2
+
 
             selected_label = Label(cal_window, text='Date Selected!', font=('consolas', 14, 'italic'),
                                    bg='#5fc29e')
@@ -179,9 +193,32 @@ def confirm_button_click(canvas):
     Describe function here
     :param canvas:
     """
-    global selected_date_label
-    selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
-    canvas.create_window(225, 170, window=selected_date_label)
+    global date_window, date_window2
+    if canvas == middle_canvas:
+        global selected_date_label2, s_time2
+        if 0 <= int(m_minute_spin_box.get()) <= 9:  # append 0 if single number
+            s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
+        elif int(m_minute_spin_box.get()) >= 10:  # avoiding else statement for debugging
+            s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+        if 0 <= int(m_hour_spin_box.get()) <=9:
+            s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
+        elif int(m_hour_spin_box.get()) >= 10:
+            s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+        selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
+        date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
+
+    elif canvas == top_canvas:
+        global selected_date_label, s_time
+        if 0 <= int(top_minute_spin_box.get()) <= 9:  # append 0 if single number
+            s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
+        elif int(top_minute_spin_box.get()) >= 10:  # avoiding else statement for debugging
+            s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+        if 0 <= int(top_hour_spin_box.get()) <= 9:
+            s_time = '0' + top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
+        elif int(top_hour_spin_box.get()) >= 10:
+            s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+        selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
+        date_window = canvas.create_window(225, 170, window=selected_date_label)
 
 
 def cancel_button_click(canvas):
@@ -190,9 +227,13 @@ def cancel_button_click(canvas):
     :param canvas:
     :return:
     """
-    pass
-    
-    
+    if canvas == middle_canvas:
+        global selected_date_label2
+        canvas.delete(date_window2)
+    elif canvas == top_canvas:
+        global selected_date_label
+        canvas.delete(date_window)
+
 
 
 # TOP CANVAS----------------------------------------------------------
@@ -229,13 +270,13 @@ top_canvas.create_text(110, 100, text='Date:', font=('consolas', 20))
 # Calendar button for top canvas
 t_cal_icon = ImageTk.PhotoImage(Image.open('cal2_icon.png').resize((50,50), Image.ANTIALIAS))
 t_calendar_button = Button(top_canvas, image=t_cal_icon, bg='light gray', command=lambda: open_calendar(top_canvas))
-top_canvas.create_window(180, 110, window=t_calendar_button)  # TODO: Later add hover over bind event.
+top_canvas.create_window(180, 110, window=t_calendar_button)
 
 # Selected date and time text
-global selected_date_label, s_date, s_time
-s_date = date_from_calendar
-s_time = '15:15'
-selected_date_label = Label(top_canvas, text='You selected: ' + s_date + ' ' + s_time,
+global selected_date_label, s_time
+# s_time = top_hour_spin_box.get() + top_minute_spin_box.get()
+s_time = ''
+selected_date_label = Label(top_canvas, text='You selected: ' + date_from_calendar + ' ' + s_time,
                             font=('consolas', 20, 'italic', 'bold'))
 
 # Checkmark icon
@@ -245,7 +286,7 @@ top_canvas.create_window(490, 90, window=check_button)
 
 # Cancel icon
 cancel_icon = ImageTk.PhotoImage(Image.open('remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
-cancel_button = Button(top_canvas, image=cancel_icon)
+cancel_button = Button(top_canvas, image=cancel_icon, command=lambda: cancel_button_click(top_canvas))
 top_canvas.create_window(490, 160, window=cancel_button)
 
 
@@ -292,25 +333,23 @@ m_calendar_button = Button(middle_canvas, image=m_cal_icon, bg='light gray',
 middle_canvas.create_window(180, 110, window=m_calendar_button)
 
 
+# Selected date and time text
+s_time2 = '10:10'
+selected_date_label2 = Label(middle_canvas, text='You selected: ' + date_from_calendar2 + ' ' + s_time2,
+                             font=('consolas', 20, 'italic', 'bold'))
+
 # Checkmark icon
 c_icon2 = ImageTk.PhotoImage(Image.open('check_icon.png').resize((60, 60), Image.ANTIALIAS))
-check_button2 = Button(middle_canvas, image=c_icon2)
+check_button2 = Button(middle_canvas, image=c_icon2, command=lambda: confirm_button_click(middle_canvas))
 middle_canvas.create_window(490, 90, window=check_button2)
 
 # Cancel icon
 cancel_icon2 = ImageTk.PhotoImage(Image.open('remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
-cancel_button2 = Button(middle_canvas, image=cancel_icon2)
+cancel_button2 = Button(middle_canvas, image=cancel_icon2, command=lambda: cancel_button_click(middle_canvas))
 middle_canvas.create_window(490, 160, window=cancel_button2)
 
-# Selected date and time text
-s_date2 = date_from_calendar
-s_time2 = '10:10'
-selected_date_label2 = Label(middle_canvas, text='You selected: ' + s_date2 + ' ' + s_time2,
-                            font=('consolas', 20, 'italic', 'bold'))
-# middle_canvas.create_window(225, 170, window=selected_date_label2)
 
 
-# TODO: 3. Add save to Excel feature.
 
 
 
@@ -331,13 +370,14 @@ calc_payment_button.bind('<Leave>', calculate_payment_button_hover_out)
 
 
 # TODO: Create money paid label
-# 2. Warning label for wrong input
+# TODO: 3. Add save to Excel feature.
+#   2. Warning label for wrong input
 
 
 
 
 
-# Status Bar
+# Status Bar-------------------------------------------
 global left_status_text, date_and_time_text, status_bar
 rate_text = 'Rate: 1hr = $5.00'
 
@@ -351,10 +391,6 @@ status_bar_right = Label(root, text='', font=('consolas', 12), bg='#5fc29e', anc
 status_bar_right.grid(row=3, column=1, sticky=E)
 # Thread for status bar time
 threading.Thread(target=status_bar_time_update).start()
-
-
-# Put event updates on the left and date and time on the right
-# Event updates in Status Bar
 
 
 
