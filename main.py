@@ -1,58 +1,164 @@
 from tkinter import *
+from tkcalendar import *
 from PIL import Image, ImageTk
+from datetime import datetime
 import openpyxl
 import os
 
+
+
 # main window configurations
+
 root = Tk()
 root.title('TimeTracker')
 root.iconbitmap('cat.ico')
-# root.configure(bg='#CEFAFA')
-# root.configure(bg='#9de6ce')
-ROOT_WIDTH = 500
-ROOT_HEIGHT = 500
+ROOT_WIDTH = 550
+ROOT_HEIGHT = 600
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.maxsize(ROOT_WIDTH+100, ROOT_HEIGHT+200)
+root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
 # root.attributes('-alpha', 0.9)  # set transparency
 # root.wm_attributes('-transparentcolor', '#CEFAFA')
 
 
-# frames in window
-# Top Frame
-top_frame = Frame(root, borderwidth=0.1, relief='solid')
-top_frame.pack(fill=BOTH, expand=TRUE)
-img = ImageTk.PhotoImage(Image.open('clock.jpg').resize((600, 400)), Image.ANTIALIAS)
-Label(top_frame, image=img).place(x=0,y=0, relwidth=1, relheight=1)
-top_title_label = Label(top_frame, text='Time Started', font=('android 7', 20))
-top_title_label.grid(row=0, column=0, padx=120, ipadx=20)  # maybe use pack here
+
+# Defining command functions and event functions
+
+def m_focus_in(event):
+    """
+    Describe function here
+    """
+    m_hour_spin_box.config(fg='black')
+    m_minute_spin_box.config(fg='black')
+def m_focus_out(event):
+    """
+    Describe function here
+    """
+    m_hour_spin_box.config(fg='gray')
+    m_minute_spin_box.config(fg='gray')
+
+def t_focus_in(event):
+    """
+
+    :param event:
+    :return:
+    """
+    top_hour_spin_box.config(fg='black')
+    top_minute_spin_box.config(fg='black')
+
+def t_focus_out(event):
+    """
+
+    :param event:
+    :return:
+    """
+    top_hour_spin_box.config(fg='gray')
+    top_minute_spin_box.config(fg='gray')
 
 
 
 
-# Midle frame
-middle_frame = Frame(root, borderwidth=0.1, relief='solid')
-img3 = ImageTk.PhotoImage(Image.open('time2.jpg').resize((600, 400)), Image.ANTIALIAS)
-Label(middle_frame, image=img3).place(x=0,y=0, relwidth=1, relheight=1)
-middle_frame.pack(fill=BOTH, expand=TRUE)
-middle_title_label = Label(middle_frame, text='Time Completed', font=('android 7', 20))
-middle_title_label.grid(row=0, column=0, padx=120, ipadx=20)
+
+# TOP CANVAS
+
+top_canvas = Canvas(root, width=100, height=100, borderwidth=0)
+top_canvas.pack(fill=BOTH, expand=1)
+img1 = ImageTk.PhotoImage(Image.open('clock.jpg'), Image.ANTIALIAS)
+top_canvas.create_image(0,0, image=img1, anchor=NW)
+top_canvas.create_text(270, 40, text='Time Started', font=('android 7', 25))
 
 
-# Bottom frame
-bottom_frame = Frame(root, borderwidth=0.1, relief='solid')
-bottom_frame.pack(fill=BOTH, expand=TRUE)
-img2 = ImageTk.PhotoImage(Image.open('money.jpg').resize((600, 400)), Image.ANTIALIAS)
-Label(bottom_frame, image=img2).place(x=0,y=0, relwidth=1, relheight=1)
-bottom_title_label = Label(bottom_frame, text='Payment', font=('android 7', 20))
-# bottom_title_label.grid(row=0, column=0, padx=120, ipadx=20)
-bottom_title_label.pack(expand=TRUE, anchor=N)  # Grid or pack?
+# Top Canvas spinboxes
+
+global top_hour_spin_box, top_minute_spin_box
+top_hour_spin_box = Spinbox(top_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
+top_canvas.create_window(400, 100, window=top_hour_spin_box)
+top_hour_spin_box.bind('<FocusIn>', t_focus_in)
+top_hour_spin_box.bind('<FocusOut>', t_focus_out)
+
+# Semicolon separating minute from hours
+top_canvas.create_text(435, 100, text=':', font=('android 7', 25, 'bold'), fill='white')
+
+top_minute_spin_box = Spinbox(top_canvas, from_=0, to=59, width=2, font=('consolas', 20), fg='gray')
+top_canvas.create_window(470, 100, window=top_minute_spin_box)
+top_minute_spin_box.bind('<FocusIn>', t_focus_in)
+top_minute_spin_box.bind('<FocusOut>', t_focus_out)
+
+# Time text
+top_canvas.create_text(340, 100, text='Time:', font=('consolas', 20))
+
+# Date text
+top_canvas.create_text(110, 100, text='Date:', font=('consolas', 20))
+
+# Calendar button
+global t_calendar_button
+t_cal_icon = ImageTk.PhotoImage(Image.open('cal2_icon.png').resize((50,50), Image.ANTIALIAS))
+t_calendar_button = Button(top_canvas, image=t_cal_icon, bg='light gray')
+top_canvas.create_window(180, 110, window=t_calendar_button)  # Later add hover over bind event.
+
+
+
+
+
+# MIDDLE CANVAS
+
+middle_canvas = Canvas(root, width=100, height=100, borderwidth=0, bd=0)  # still has slight border cant remove it.
+middle_canvas.pack(fill=BOTH, expand=1)
+img2 = ImageTk.PhotoImage(Image.open('time2.jpg').resize((600,400)), Image.ANTIALIAS)
+middle_canvas.create_image(0,0, image=img2, anchor=NW)
+middle_canvas.create_text(280, 40, text='Time Completed', font=('android 7', 25), fill='#cae8dd')
+
+
+# Middle Canvas spinboxes
+global m_hour_spin_box, m_minute_spin_box
+m_hour_spin_box = Spinbox(middle_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
+m_hour_spin_box.bind('<FocusIn>', m_focus_in)
+m_hour_spin_box.bind('<FocusOut>', m_focus_out)
+middle_canvas.create_window(400, 100, window=m_hour_spin_box)
+
+# Semicolon separating minute from hours
+middle_canvas.create_text(435, 100, text=':', font=('android 7', 25, 'bold'), fill='white')
+
+m_minute_spin_box = Spinbox(middle_canvas, from_=0, to=59, width=2, font=('consolas', 20), fg='gray')
+middle_canvas.create_window(470, 100, window=m_minute_spin_box)
+m_minute_spin_box.bind('<FocusIn>', m_focus_in)
+m_minute_spin_box.bind('<FocusOut>', m_focus_out)
+
+# Time text
+middle_canvas.create_text(340, 100, text='Time:', font=('consolas', 20), fill='#cae8dd')
+
+# Date text
+middle_canvas.create_text(110, 100, text='Date:', font=('consolas', 20), fill='#cae8dd')
+
+# Calendar button
+global m_calendar_button
+m_cal_icon = ImageTk.PhotoImage(Image.open('cal2_icon.png').resize((50,50), Image.ANTIALIAS))
+m_calendar_button = Button(middle_canvas, image=m_cal_icon, bg='light gray')
+middle_canvas.create_window(180, 110, window=m_calendar_button)  # Later add hover over bind event.
+
+
+
+
+# Bottom Canvas
+bottom_canvas = Canvas(root, width=100, height=100, borderwidth=0)
+bottom_canvas.pack(fill=BOTH, expand=1)
+img3 = ImageTk.PhotoImage(Image.open('money.jpg').resize((600,400)), Image.ANTIALIAS)
+bottom_canvas.create_image(0,0, image=img3, anchor=NW)
+bottom_canvas.create_text(290, 40, text='Payment', font=('android 7', 25),)
+
+
+
+
+
+
 
 # Status Bar
-status = Label(root, text='Current Time: Cur Date and Time here', font=('consolas', 10), bg='#9de6ce', anchor=E)
+status = Label(root, text='Current Time: Cur Date and Time here', font=('consolas', 10), bg='#5fc29e', anchor=E)
 status.pack(fill=X, side=BOTTOM)
 
 # Put event updates on the left and date and time on the right
+# Event updates in Status Bar
+
 
 
 if __name__ == '__main__':
