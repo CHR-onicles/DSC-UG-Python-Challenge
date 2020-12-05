@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import ImageTk, Image
+from datetime import datetime
 
 
 # app = Tk()
@@ -35,7 +36,10 @@ filename = ImageTk.PhotoImage(Image.open('money.jpg'))
 background_label = Label(top, image=filename)
 background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-print(C.keys())
+print(datetime.now().year)
+print(datetime.now().day)
+print(datetime.now().month)
+print(type(datetime.now().month))
 
 C.pack()
 top.mainloop()
