@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 from datetime import datetime as dt
 import openpyxl
 import os
+import threading
 
 
 
@@ -13,12 +14,12 @@ root = Tk()
 root.title('TimeTracker')
 root.iconbitmap('cat.ico')
 ROOT_WIDTH = 550
-ROOT_HEIGHT = 600
+ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
+# root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
+root.configure(bg='#5fc29e')
 # root.attributes('-alpha', 0.9)  # set transparency
-# root.wm_attributes('-transparentcolor', '#CEFAFA')
 
 # Global variables
 cal_window = None
@@ -124,6 +125,16 @@ def open_calendar(canvas):
         else:  # Calendar window was opened but closed.
             create_calendar_window()
 
+
+def status_bar_time_update():
+    """
+    Function to update the time in the status bar.
+    """
+    cur_time = dt.now().strftime('%H:%M:%S')
+    status_bar_right.config(text='System Time: ' + cur_time)
+    status_bar_right.after(1000, status_bar_time_update)
+
+
         
     
     
@@ -133,8 +144,8 @@ def open_calendar(canvas):
 
 # TOP CANVAS
 global top_canvas
-top_canvas = Canvas(root, width=100, height=100, borderwidth=0)
-top_canvas.pack(fill=BOTH, expand=1)
+top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
+top_canvas.grid(row=0, column=0, sticky=W+E, columnspan=2)
 img1 = ImageTk.PhotoImage(Image.open('clock.jpg'), Image.ANTIALIAS)
 top_canvas.create_image(0,0, image=img1, anchor=NW)
 top_canvas.create_text(270, 40, text='Time Started', font=('android 7', 25))
@@ -175,8 +186,8 @@ top_canvas.create_window(180, 110, window=t_calendar_button)  # TODO: Later add 
 
 # MIDDLE CANVAS
 
-middle_canvas = Canvas(root, width=100, height=100, borderwidth=0, bd=0)  # still has slight border cant remove it.
-middle_canvas.pack(fill=BOTH, expand=1)
+middle_canvas = Canvas(root,width=ROOT_WIDTH, height=200, borderwidth=0, bd=0)  # still has slight border cant remove it.
+middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W+E)
 img2 = ImageTk.PhotoImage(Image.open('time2.jpg').resize((600,400)), Image.ANTIALIAS)
 middle_canvas.create_image(0,0, image=img2, anchor=NW)
 middle_canvas.create_text(280, 40, text='Time Completed', font=('android 7', 25), fill='#e8ebea')
@@ -217,8 +228,8 @@ middle_canvas.create_window(180, 110, window=m_calendar_button)  # TODO: Later a
 
 
 # Bottom Canvas
-bottom_canvas = Canvas(root, width=100, height=100, borderwidth=0)
-bottom_canvas.pack(fill=BOTH, expand=1)
+bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
+bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W+E)
 img3 = ImageTk.PhotoImage(Image.open('money.jpg').resize((600,400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0,0, image=img3, anchor=NW)
 bottom_canvas.create_text(280, 40, text='Payment', font=('android 7', 25),)
@@ -237,12 +248,17 @@ bottom_canvas.create_window(270, 100, window=calc_payment_button)
 # Status Bar
 global left_status_text, rate_text, date_and_time_text, status_bar
 rate_text = 'Rate: 1hr = $5.00'
-date_and_time_text = 'Current Time: ' + dt.now().strftime('%H:%M')
-left_status_text = rate_text
-status_bar = Label(root, text=left_status_text + '\t\t\t' + date_and_time_text,
-                   font=('consolas', 12), bg='#5fc29e', anchor=W)
-status_bar.pack(fill=X, side=BOTTOM)
 
+# Left Status bar text
+status_bar_left = Label(root, text=rate_text, font=('consolas', 12), bg='#5fc29e', anchor=W)
+status_bar_left.grid(row=3, column=0, sticky=W)
+
+
+# Right status bar text
+status_bar_right = Label(root, text='', font=('consolas', 12), bg='#5fc29e', anchor=E)
+status_bar_right.grid(row=3, column=1, sticky=E)  # TODO: Break into 2 parts.
+# Thread for status bar time
+threading.Thread(target=status_bar_time_update).start()
 
 
 # Put event updates on the left and date and time on the right
@@ -252,3 +268,4 @@ status_bar.pack(fill=X, side=BOTTOM)
 
 if __name__ == '__main__':
     root.mainloop()
+

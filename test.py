@@ -1,6 +1,8 @@
 from tkinter import *
 from PIL import ImageTk, Image
-from datetime import datetime
+from datetime import datetime as dt
+import time
+import threading
 
 
 # app = Tk()
@@ -27,19 +29,48 @@ from datetime import datetime
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
-top = Tk()
-top.geometry('400x400')
-top.title('My App')
+root = Tk()
+root.geometry('400x400')
+root.title('My App')
 
-C = Canvas(top, bg="blue", height=250, width=300)
-filename = ImageTk.PhotoImage(Image.open('money.jpg'))
-background_label = Label(top, image=filename)
-background_label.place(x=0, y=0, relwidth=1, relheight=1)
+# C = Canvas(top, bg="blue", height=250, width=300)
+# filename = ImageTk.PhotoImage(Image.open('money.jpg'))
+# background_label = Label(top, image=filename)
+# background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-print(datetime.now().year)
-print(datetime.now().day)
-print(datetime.now().month)
-print(type(datetime.now().month))
+# print(datetime.now().year)
+# print(datetime.now().day)
+# print(datetime.now().month)
+# print(type(datetime.now().month))
 
-C.pack()
-top.mainloop()
+c = Canvas(root, width=400, height=100, bg='blue', bd=0)
+bt = Button(c, text='Click 1')
+et = Entry(c, width=10, font='none 15')
+c.create_window(100,80, window=bt)
+c.create_window(250, 80, window=et)
+c.grid(row=0, column=0, columnspan=2, sticky=W+E)
+
+c2 = Canvas(root, height=100, bg='red', bd=0)
+bt2 = Button(c2, text='Click Here')
+et2 = Entry(c2, width=10, font='none 15')
+c2.create_window(100, 80, window=bt2)
+c2.create_window(250, 80, window=et2)
+c2.grid(row=1, column=0, columnspan=2, sticky=W+E)
+
+
+def update():
+    time = dt.now().strftime('%H:%M:%S')
+    status_bar_right.config(text=time)
+    status_bar_right.after(1000, update)
+
+status_bar_left = Label(root, text='Stuff\nStuff About App',justify='left', font=('consolas', 12), bd=1, relief='sunken')
+status_bar_left.grid(row=10, column=0, sticky=W)
+
+global status_bar_right
+status_bar_right = Label(root, text='sdsdfd', justify='right', font=('consolas', 12), bd=1, relief='sunken')
+status_bar_right.grid(row=10, column=1, sticky=E)
+threading.Thread(target=update).start()
+
+
+
+root.mainloop()
