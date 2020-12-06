@@ -24,7 +24,7 @@ ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
+# root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
 root.configure(bg='#5fc29e')
 
 
@@ -184,7 +184,7 @@ def status_bar_time_update():
     Function to update the time in the status bar through a thread
     """
     cur_time = dt.now().strftime('%H:%M:%S')
-    status_bar_right.config(text='System Time: ' + cur_time)
+    status_bar_right.config(text='System Time(24hrs): ' + cur_time)
     status_bar_right.after(1000, status_bar_time_update)
 
 
@@ -194,38 +194,38 @@ def confirm_button_click(canvas):
     :param canvas:
     """
     global date_window, date_window2
-    if canvas == middle_canvas:
-        global selected_date_label2, s_time2
-        if 0 <= int(m_minute_spin_box.get()) <= 9:  # append 0 if single number
-            s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-        elif int(m_minute_spin_box.get()) >= 10:  # avoiding else statement for debugging
-            s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
-        if 0 <= int(m_hour_spin_box.get()) <=9:
-            s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-        elif int(m_hour_spin_box.get()) >= 10:
-            s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
-        selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
-        date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
 
-    elif canvas == top_canvas:
+    if canvas == top_canvas:
         global selected_date_label, s_time
-        if 0 <= int(top_minute_spin_box.get()) <= 9:  # append 0 if single number
-            s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-        elif int(top_minute_spin_box.get()) >= 10:  # avoiding else statement for debugging
-            s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
-        if 0 <= int(top_hour_spin_box.get()) <= 9:
+        if (0 <= int(top_hour_spin_box.get()) <= 9) and (0 <= int(top_minute_spin_box.get()) <= 9):
             s_time = '0' + top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-        elif int(top_hour_spin_box.get()) >= 10:
+        elif 0 <= int(top_minute_spin_box.get()) <= 9:  # append 0 if single number
+            s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
+        elif 0 <= int(top_hour_spin_box.get()) <= 9:
+            s_time = '0' + top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+        else:
             s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
         selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
         date_window = canvas.create_window(225, 170, window=selected_date_label)
+
+    elif canvas == middle_canvas:
+        global selected_date_label2, s_time2
+        if (0 <= int(m_minute_spin_box.get()) <= 9) and (0 <= int(m_hour_spin_box.get()) <= 9):
+            s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
+        elif 0 <= int(m_minute_spin_box.get()) <= 9:  # append 0 if single number
+            s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
+        elif 0 <= int(m_hour_spin_box.get()) <= 9:
+            s_time2 = '0' + m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+        else:
+            s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+        selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
+        date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
 
 
 def cancel_button_click(canvas):
     """
     Describe function here
     :param canvas:
-    :return:
     """
     if canvas == middle_canvas:
         global selected_date_label2
@@ -233,6 +233,53 @@ def cancel_button_click(canvas):
     elif canvas == top_canvas:
         global selected_date_label
         canvas.delete(date_window)
+
+
+def payment_calculation():
+    """
+    Function to calculate payment amount based on the date and time passed in
+    by user.
+    Rate: $5 for 60mins (1hr)
+    """
+    # Do nothing with dates for now since both dates(date started and date completed) will be the same.
+
+    global amount_label, calc_payment_button, amount_to_be_paid, invalid_label
+    amount_label = bottom_canvas.create_text(250, 150, text='')
+    # bottom_canvas.delete(amount_label)
+    # Perform operations on hours and minutes only
+    # Grabbing hours and minutes
+    hour_completed = int(m_hour_spin_box.get())
+    minutes_completed = int(m_minute_spin_box.get())
+    hour_started = int(top_hour_spin_box.get())
+    minutes_started = int(top_minute_spin_box.get())
+
+    hours_elapsed = hour_completed - hour_started
+    minutes_elapsed = minutes_completed - minutes_started
+
+    hours_to_mins = hours_elapsed * 60
+    total_minutes_elapsed = minutes_elapsed + hours_to_mins
+    amount_to_be_paid = round(float(total_minutes_elapsed * 1/12), 2)
+
+    if total_minutes_elapsed < 0:
+        invalid_label = bottom_canvas.create_text(280, 150, text='Invalid Information Provided',
+                                                  font=('consolas', 16, 'bold'), fill='red')
+        calc_payment_button.config(state=DISABLED)
+        calc_payment_button.bell()
+    else:
+        amount_label = bottom_canvas.create_text(260, 150, text='$' + str(amount_to_be_paid),
+                                                 font=('consolas', 40, 'bold'))
+        calc_payment_button.config(state=DISABLED)
+
+def reset_values():
+    """
+    Function to reset dates, time and amount calculated.
+    """
+    global amount_label, date_window, date_window2, calc_payment_button, amount_to_be_paid, invalid_label
+    bottom_canvas.delete(amount_label)
+    bottom_canvas.delete(invalid_label)
+    # middle_canvas.delete(date_window2)
+    # top_canvas.delete(date_window)
+    calc_payment_button.config(state=NORMAL)
 
 
 
@@ -273,8 +320,7 @@ t_calendar_button = Button(top_canvas, image=t_cal_icon, bg='light gray', comman
 top_canvas.create_window(180, 110, window=t_calendar_button)
 
 # Selected date and time text
-global selected_date_label, s_time
-# s_time = top_hour_spin_box.get() + top_minute_spin_box.get()
+# global selected_date_label, s_time
 s_time = ''
 selected_date_label = Label(top_canvas, text='You selected: ' + date_from_calendar + ' ' + s_time,
                             font=('consolas', 20, 'italic', 'bold'))
@@ -334,7 +380,7 @@ middle_canvas.create_window(180, 110, window=m_calendar_button)
 
 
 # Selected date and time text
-s_time2 = '10:10'
+s_time2 = ''
 selected_date_label2 = Label(middle_canvas, text='You selected: ' + date_from_calendar2 + ' ' + s_time2,
                              font=('consolas', 20, 'italic', 'bold'))
 
@@ -363,10 +409,23 @@ bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
 bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25),)
 
 # Calculate Payment Button
-calc_payment_button = Button(bottom_canvas, text='Calculate Payment', font=('consolas', 20))
-bottom_canvas.create_window(270, 100, window=calc_payment_button)
+calc_payment_button = Button(bottom_canvas, text='Calculate Payment', font=('consolas', 20),
+                             command=payment_calculation)
+bottom_canvas.create_window(275, 100, window=calc_payment_button)
 calc_payment_button.bind('<Enter>', calculate_payment_button_hover_in)
 calc_payment_button.bind('<Leave>', calculate_payment_button_hover_out)
+
+# Reset Button
+reset_icon = ImageTk.PhotoImage(Image.open('Reset.png').resize((70, 65), Image.ANTIALIAS))
+reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
+bottom_canvas.create_window(60, 160, window=reset_button)
+
+
+# Save to Excel Button
+save_icon = ImageTk.PhotoImage(Image.open('save3.png').resize((70, 65), Image.ANTIALIAS))
+save_button = Button(bottom_canvas, image=save_icon)
+bottom_canvas.create_window(490, 160, window=save_button)
+
 
 
 # TODO: Create money paid label
@@ -389,6 +448,7 @@ status_bar_left.grid(row=3, column=0, sticky=W)
 # Right status bar text
 status_bar_right = Label(root, text='', font=('consolas', 12), bg='#5fc29e', anchor=E)
 status_bar_right.grid(row=3, column=1, sticky=E)
+
 # Thread for status bar time
 threading.Thread(target=status_bar_time_update).start()
 
