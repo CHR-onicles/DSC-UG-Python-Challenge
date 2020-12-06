@@ -24,7 +24,7 @@ ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
-# root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
+root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
 root.configure(bg='#5fc29e')
 
 
@@ -154,7 +154,6 @@ def open_calendar(canvas):
             selected_label = Label(cal_window, text='Date Selected!', font=('consolas', 14, 'italic'),
                                    bg='#5fc29e')
             selected_label.pack(pady=5)
-            # selected_label.pack_forget()
             submit_button.config(state=DISABLED)
 
         global cal
@@ -245,7 +244,8 @@ def payment_calculation():
 
     global amount_label, calc_payment_button, amount_to_be_paid, invalid_label
     amount_label = bottom_canvas.create_text(250, 150, text='')
-    # bottom_canvas.delete(amount_label)
+    invalid_label = bottom_canvas.create_text(250, 150, text='')
+
     # Perform operations on hours and minutes only
     # Grabbing hours and minutes
     hour_completed = int(m_hour_spin_box.get())
@@ -266,8 +266,8 @@ def payment_calculation():
         calc_payment_button.config(state=DISABLED)
         calc_payment_button.bell()
     else:
-        amount_label = bottom_canvas.create_text(260, 150, text='$' + str(amount_to_be_paid),
-                                                 font=('consolas', 40, 'bold'))
+        amount_label = bottom_canvas.create_text(270, 150, text='$' + str(amount_to_be_paid),
+                                                 font=('consolas', 40, 'bold'), fill='black')
         calc_payment_button.config(state=DISABLED)
 
 def reset_values():
@@ -428,13 +428,6 @@ bottom_canvas.create_window(490, 160, window=save_button)
 
 
 
-# TODO: Create money paid label
-# TODO: 3. Add save to Excel feature.
-#   2. Warning label for wrong input
-
-
-
-
 
 # Status Bar-------------------------------------------
 global left_status_text, date_and_time_text, status_bar
@@ -456,4 +449,8 @@ threading.Thread(target=status_bar_time_update).start()
 
 if __name__ == '__main__':
     root.mainloop()
+
+    # TODO: 1. Add save to Excel feature.
+    #   2. Add more binding hover events that increase button size or highlight colour
+    #   3. Maybe change button and label locations for top and middle canvas
 
