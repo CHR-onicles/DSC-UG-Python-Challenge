@@ -1,13 +1,14 @@
 """
-Author: CHR-onicles
+Author: CHR-onicles©
 Date: 05/12/2020
 
-DSC UG Python Challenge.
+DSC UG Python Challenge - Time Tracker App.
 """
 
 from tkinter import *
 from tkcalendar import *
 from tkinter.filedialog import askdirectory
+from tkinter import messagebox
 from PIL import Image, ImageTk
 from datetime import datetime as dt
 import openpyxl
@@ -24,26 +25,30 @@ root.iconbitmap('images/cat.ico')
 ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
-root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.configure(bg='#5fc29e')
+root.minsize(ROOT_WIDTH, ROOT_HEIGHT)  # Preventing user from increasing or reducing app size
+root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)   # as most widgets are statically placed!
+root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar too.
 
 
-# Global variables
+# GLOBAL VARIABLES------------
+
 # Calendar stuff
 cal_window = None
 first_time_open = False
 date_from_calendar = ''
 date_from_calendar2 = ''
 
-
+# Status bar text
 rate_text = 'Rate: 1hr = $5.00'
 
+# Payment calculation variable
+amount_to_be_paid = 0.0
+
 # Excel stuff
-excel_first_time = 0
+excel_first_time_open = 0
+# -----------------------------
 
-
-# Defining command functions and binding event functions
+# DEFINING BINDING EVENT FUNCTIONS
 
 def m_focus_in(event):
     """
@@ -166,6 +171,9 @@ def reset_button_hover_out(event):
     # Update status bar
     status_bar_left.config(text=rate_text, font=('consolas', 12))
 
+
+# DEFINING COMMAND FUNCTIONS
+
 def open_calendar(canvas):
     """
     Command function to open calendar for user to choose a date.
@@ -257,6 +265,8 @@ def confirm_button_click(canvas):
                     configurations to it or some other global variables.
     """
     global date_window, date_window2
+
+    # Add check to make sure only 2 digits are accepted for both spin boxes
 
     if canvas == top_canvas:
         global selected_date_label, s_time
@@ -352,50 +362,96 @@ def save_to_excel():
     Function to save date/time started and completed and payment calculated
     to an excel file.
     """
-    dir_location = askdirectory(initialdir='.\\', title='Select Directory To Save To')
-
-    # Change location to the user-chosen one
-    os.chdir(dir_location)
-
-    # Search for already existing file
-    for item in os.listdir():
-        if item != 'payment_history.xlsx' and item == os.listdir()[-1]:
-            print('Creating new file')
-            # Call create new file function here
-
-        elif item == 'payment_history.xlsx':
-            print('already exists.')
-            # Call existing file function here
-            break
-
-
-    # 3. If user saves for first time and clicks again, go to that already opened file
-
+    global excel_first_time_open, amount_to_be_paid
 
     def create_new_file():
+        """
+        Function to create new excel file and input information from app
+        """
         workbook = openpyxl.Workbook()
         sheet = workbook['Sheet']
-        sheet['A1'] = 'Date/Time Started'
-        sheet['B1'] = 'Date/Time Completed'
-        sheet['C1'] = 'Time Info was Saved'
 
-        # Code to add information to cells
+        # Column headers
+        sheet['A1'] = 'Date Started'
+        sheet['B1'] = 'Time Started'
+        sheet['C1'] = 'Date Completed'
+        sheet['D1'] = 'Time Completed'
+        sheet['E1'] = 'Calculated Payment'
+        sheet['F1'] = 'Time Info was Saved'
 
+        # This is the first time so we can write specifically to certain cells
+        sheet['A2'] = date_from_calendar
+        sheet['B2'] = s_time
+        sheet['C2'] = date_from_calendar2
+        sheet['D2'] = s_time2
+        sheet['E2'] = '$' + str(amount_to_be_paid)
+        sheet['F2'] = dt.now().strftime('%d/%m/%Y, %H:%M:%S')
+
+        # Save excel file and close it
         workbook.save('payment_history.xlsx')
         workbook.close()
-        print('Done with new excel file')
+
+        # Message box for successful entry
+        messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to excel file!')
 
 
     def edit_existing_file():
+        """
+        Function to edit already existing excel file and input info from app.
+        """
         workbook = openpyxl.load_workbook('payment_history.xlsx')
         sheet = workbook['Sheet']
 
+        found_available_cell = False
+        row_num = 0
+        for row in sheet.iter_rows(min_row=1, max_row=100, min_col=1, max_col=6):
+            row_num += 1
+            for count, cell in enumerate(row):
 
-        # Code to add info to cells
+                # if all cells in a row are empty, then that row is available for writing
+                if cell.value is None and cell == row[-1]:
+                    sheet.cell(row=row_num, column=1).value = date_from_calendar
+                    sheet.cell(row=row_num, column=2).value = s_time
+                    sheet.cell(row=row_num, column=3).value = date_from_calendar2
+                    sheet.cell(row=row_num, column=4).value = s_time2
+                    sheet.cell(row=row_num, column=5).value = '$' + str(amount_to_be_paid)
+                    sheet.cell(row=row_num, column=6).value = dt.now().strftime('%d/%m/%Y, %H:%M:%S')
+                    found_available_cell = True
+                    break
+                elif cell.value is not None:  # if any cell contains information, break
+                    break
+            if found_available_cell == True:
+                break
 
+        # Save and close excel file
         workbook.save('payment_history.xlsx')
         workbook.close()
-        print('Done with existing excel file')
+        messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to excel file!')
+
+    # Main Excel Logic
+    if excel_first_time_open == 0:  # Save button has been clicked already
+        dir_location = askdirectory(initialdir='.\\', title='Select Directory To Save To')
+        print('opening')
+        # exit()
+
+        # Change location to the user-chosen one
+        os.chdir(dir_location)
+
+        # Search for already existing file
+        for item in os.listdir():
+            if item != 'payment_history.xlsx' and item == os.listdir()[-1]:
+                create_new_file()
+
+            elif item == 'payment_history.xlsx':
+                edit_existing_file()
+                break
+
+    else:
+        edit_existing_file()
+
+    print('Done with excel stuff')
+    excel_first_time_open += 1
+
 
 
 
@@ -406,7 +462,7 @@ def save_to_excel():
 
 top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 top_canvas.grid(row=0, column=0, sticky=W+E, columnspan=2)
-img1 = ImageTk.PhotoImage(Image.open('images/clock.jpg'), Image.ANTIALIAS)
+img1 = ImageTk.PhotoImage(Image.open('images/clock_dark.jfif'), Image.ANTIALIAS)
 top_canvas.create_image(0, 0, image=img1, anchor=NW)
 top_canvas.create_text(270, 30, text='Date/Time Started', font=('android 7', 25))
 
@@ -460,7 +516,7 @@ top_canvas.create_window(490, 160, window=cancel_button)
 
 middle_canvas = Canvas(root,width=ROOT_WIDTH, height=200, borderwidth=0)
 middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W+E)
-img2 = ImageTk.PhotoImage(Image.open('images/time2.jpg').resize((600, 400)), Image.ANTIALIAS)
+img2 = ImageTk.PhotoImage(Image.open('images/time_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 middle_canvas.create_image(0,0, image=img2, anchor=NW)
 middle_canvas.create_text(280, 26, text='Date/Time Completed', font=('android 7', 25), fill='#e8ebea')
 
@@ -514,11 +570,11 @@ middle_canvas.create_window(490, 160, window=cancel_button2)
 
 
 
-# BOTTOM CANVAS----------------------------------------------------------------------------
+# BOTTOM CANVAS-----------------------------------------------------------------------------------
 
 bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W+E)
-img3 = ImageTk.PhotoImage(Image.open('images/money.jpg').resize((600, 400)), Image.ANTIALIAS)
+img3 = ImageTk.PhotoImage(Image.open('images/money_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
 bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25),)
 
