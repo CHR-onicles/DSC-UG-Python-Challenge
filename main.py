@@ -19,7 +19,7 @@ import threading
 
 root = Tk()
 root.title('TimeTracker')
-root.iconbitmap('cat.ico')
+root.iconbitmap('images/cat.ico')
 ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
@@ -36,11 +36,11 @@ date_from_calendar = ''
 date_from_calendar2 = ''
 
 
-# Defining command functions and event functions
+# Defining command functions and binding event functions
 
 def m_focus_in(event):
     """
-    Function to change  the middle canvas'  hour and minute spinbox
+    Function to change the middle canvas' hour and minute spinbox
      foreground colour when hovered on.
     """
     m_hour_spin_box.config(fg='black')
@@ -74,7 +74,7 @@ def t_focus_out(event):
 def submit_button_hover_in(event):
     """
     Binding event function to update submit button in calendar,
-    when it is hovered into.
+    when it is hovered on.
     """
     submit_button.config(bg='white', font=('consolas', 14, 'italic'))
 
@@ -106,12 +106,11 @@ def calculate_payment_button_hover_out(event):
 def open_calendar(canvas):
     """
     Command function to open calendar for user to choose a date.
-    :param: canvas
+    :param: canvas: canvas object for the function to know which canvas called it and
+                    give it specific attributes.
     """
 
     global first_time_open, cal_window
-    # calc_payment_button.config(state=DISABLED)  # Trying to disable calculate payment button when
-    #   calendar is open... requires way more code, so will use another kind of check.
 
     def create_calendar_window():
         global first_time_open, cal_window
@@ -124,7 +123,7 @@ def open_calendar(canvas):
         # Calendar window configurations
         cal_window = Toplevel()
         cal_window.title('Calendar')
-        cal_window.iconbitmap('cat.ico')
+        cal_window.iconbitmap('images/cat.ico')
         cal_window.geometry('250x270')
         cal_window.maxsize(250, 270)
         cal_window.minsize(250, 270)
@@ -132,7 +131,8 @@ def open_calendar(canvas):
 
         def get_date():
             """
-            Describe function here
+            Based on the canvas argument from outer function, this function
+            updates a global variable on the date got from the calendar.
             """
             global cal_window, selected_label, date_from_calendar, date_from_calendar2
             if canvas == top_canvas:
@@ -180,7 +180,7 @@ def open_calendar(canvas):
 
 def status_bar_time_update():
     """
-    Function to update the time in the status bar through a thread
+    Function to update the time in the status bar through a thread.
     """
     cur_time = dt.now().strftime('%H:%M:%S')
     status_bar_right.config(text='System Time(24hrs): ' + cur_time)
@@ -189,8 +189,9 @@ def status_bar_time_update():
 
 def confirm_button_click(canvas):
     """
-    Describe function here
-    :param canvas:
+    Command function to display user's choice of date and time on the canvas provided.
+    :param canvas: canvas object to know which canvas called it and attribute specific
+                    configurations to it or some other global variables.
     """
     global date_window, date_window2
 
@@ -223,8 +224,8 @@ def confirm_button_click(canvas):
 
 def cancel_button_click(canvas):
     """
-    Describe function here
-    :param canvas:
+    Command function to remove label/text telling user his choice of date and time.
+    :param canvas: canvas object to know which canvas called it and update specific labels.
     """
     if canvas == middle_canvas:
         global selected_date_label2
@@ -270,11 +271,12 @@ def payment_calculation():
                                                  font=('consolas', 40, 'bold'), fill='black')
         calc_payment_button.config(state=DISABLED)
 
+
 def reset_values():
     """
     Function to reset dates, time and amount calculated.
     """
-    global amount_label, date_window, date_window2, calc_payment_button, amount_to_be_paid, invalid_label
+    global amount_label, calc_payment_button, amount_to_be_paid, invalid_label
     bottom_canvas.delete(amount_label)
     bottom_canvas.delete(invalid_label)
     # middle_canvas.delete(date_window2)
@@ -287,10 +289,9 @@ def reset_values():
 
 top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 top_canvas.grid(row=0, column=0, sticky=W+E, columnspan=2)
-img1 = ImageTk.PhotoImage(Image.open('clock.jpg'), Image.ANTIALIAS)
+img1 = ImageTk.PhotoImage(Image.open('images/clock.jpg'), Image.ANTIALIAS)
 top_canvas.create_image(0, 0, image=img1, anchor=NW)
 top_canvas.create_text(270, 30, text='Date/Time Started', font=('android 7', 25))
-
 
 
 # Top Canvas Hour Spin Box
@@ -315,23 +316,22 @@ top_canvas.create_text(280, 100, text='Time:', font=('consolas', 20))
 top_canvas.create_text(110, 100, text='Date:', font=('consolas', 20))
 
 # Calendar button for top canvas
-t_cal_icon = ImageTk.PhotoImage(Image.open('cal2_icon.png').resize((50,50), Image.ANTIALIAS))
+t_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50,50), Image.ANTIALIAS))
 t_calendar_button = Button(top_canvas, image=t_cal_icon, bg='light gray', command=lambda: open_calendar(top_canvas))
 top_canvas.create_window(180, 110, window=t_calendar_button)
 
 # Selected date and time text
-# global selected_date_label, s_time
 s_time = ''
 selected_date_label = Label(top_canvas, text='You selected: ' + date_from_calendar + ' ' + s_time,
                             font=('consolas', 20, 'italic', 'bold'))
 
 # Checkmark icon
-c_icon = ImageTk.PhotoImage(Image.open('check_icon.png').resize((60, 60), Image.ANTIALIAS))
+c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
 check_button = Button(top_canvas, image=c_icon, command=lambda: confirm_button_click(top_canvas))
 top_canvas.create_window(490, 90, window=check_button)
 
 # Cancel icon
-cancel_icon = ImageTk.PhotoImage(Image.open('remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
+cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
 cancel_button = Button(top_canvas, image=cancel_icon, command=lambda: cancel_button_click(top_canvas))
 top_canvas.create_window(490, 160, window=cancel_button)
 
@@ -339,13 +339,11 @@ top_canvas.create_window(490, 160, window=cancel_button)
 
 
 
-
 # MIDDLE CANVAS--------------------------------------------------------------
 
-middle_canvas = Canvas(root,width=ROOT_WIDTH, height=200, borderwidth=0, bd=0)
-# still has slight border cant remove it.
+middle_canvas = Canvas(root,width=ROOT_WIDTH, height=200, borderwidth=0)
 middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W+E)
-img2 = ImageTk.PhotoImage(Image.open('time2.jpg').resize((600, 400)), Image.ANTIALIAS)
+img2 = ImageTk.PhotoImage(Image.open('images/time2.jpg').resize((600, 400)), Image.ANTIALIAS)
 middle_canvas.create_image(0,0, image=img2, anchor=NW)
 middle_canvas.create_text(280, 26, text='Date/Time Completed', font=('android 7', 25), fill='#e8ebea')
 
@@ -373,7 +371,7 @@ middle_canvas.create_text(280, 100, text='Time:', font=('consolas', 20), fill='#
 middle_canvas.create_text(110, 100, text='Date:', font=('consolas', 20), fill='#e8ebea')
 
 # Calendar button for middle canvas
-m_cal_icon = ImageTk.PhotoImage(Image.open('cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+m_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
 m_calendar_button = Button(middle_canvas, image=m_cal_icon, bg='light gray',
                            command=lambda: open_calendar(middle_canvas))
 middle_canvas.create_window(180, 110, window=m_calendar_button)
@@ -385,15 +383,14 @@ selected_date_label2 = Label(middle_canvas, text='You selected: ' + date_from_ca
                              font=('consolas', 20, 'italic', 'bold'))
 
 # Checkmark icon
-c_icon2 = ImageTk.PhotoImage(Image.open('check_icon.png').resize((60, 60), Image.ANTIALIAS))
+c_icon2 = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
 check_button2 = Button(middle_canvas, image=c_icon2, command=lambda: confirm_button_click(middle_canvas))
 middle_canvas.create_window(490, 90, window=check_button2)
 
 # Cancel icon
-cancel_icon2 = ImageTk.PhotoImage(Image.open('remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
+cancel_icon2 = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
 cancel_button2 = Button(middle_canvas, image=cancel_icon2, command=lambda: cancel_button_click(middle_canvas))
 middle_canvas.create_window(490, 160, window=cancel_button2)
-
 
 
 
@@ -404,7 +401,7 @@ middle_canvas.create_window(490, 160, window=cancel_button2)
 
 bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W+E)
-img3 = ImageTk.PhotoImage(Image.open('money.jpg').resize((600,400)), Image.ANTIALIAS)
+img3 = ImageTk.PhotoImage(Image.open('images/money.jpg').resize((600,400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
 bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25),)
 
@@ -416,20 +413,21 @@ calc_payment_button.bind('<Enter>', calculate_payment_button_hover_in)
 calc_payment_button.bind('<Leave>', calculate_payment_button_hover_out)
 
 # Reset Button
-reset_icon = ImageTk.PhotoImage(Image.open('Reset.png').resize((70, 65), Image.ANTIALIAS))
+reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((70, 65), Image.ANTIALIAS))
 reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
 bottom_canvas.create_window(60, 160, window=reset_button)
 
 
 # Save to Excel Button
-save_icon = ImageTk.PhotoImage(Image.open('save3.png').resize((70, 65), Image.ANTIALIAS))
+save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((70, 65), Image.ANTIALIAS))
 save_button = Button(bottom_canvas, image=save_icon)
 bottom_canvas.create_window(490, 160, window=save_button)
 
 
 
 
-# Status Bar-------------------------------------------
+
+# STATUS BAR-------------------------------------------
 global left_status_text, date_and_time_text, status_bar
 rate_text = 'Rate: 1hr = $5.00'
 
@@ -451,6 +449,6 @@ if __name__ == '__main__':
     root.mainloop()
 
     # TODO: 1. Add save to Excel feature.
-    #   2. Add more binding hover events that increase button size or highlight colour
-    #   3. Maybe change button and label locations for top and middle canvas
+    #       2. Add more binding hover events that increase button size or highlight colour
+    #       3. Maybe change button and label locations for top and middle canvas
 

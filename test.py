@@ -71,6 +71,10 @@ status_bar_right = Label(root, text='sdsdfd', justify='right', font=('consolas',
 status_bar_right.grid(row=10, column=1, sticky=E)
 threading.Thread(target=update).start()
 
+pic = ImageTk.PhotoImage(Image.open('images/save3.png'))
+top = Toplevel()
+lb = Label(top, image=pic)
+lb.pack()
 
 
 root.mainloop()
