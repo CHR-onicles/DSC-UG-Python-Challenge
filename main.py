@@ -7,6 +7,7 @@ DSC UG Python Challenge.
 
 from tkinter import *
 from tkcalendar import *
+from tkinter.filedialog import askdirectory
 from PIL import Image, ImageTk
 from datetime import datetime as dt
 import openpyxl
@@ -36,12 +37,19 @@ date_from_calendar = ''
 date_from_calendar2 = ''
 
 
+rate_text = 'Rate: 1hr = $5.00'
+
+# Excel stuff
+excel_first_time = 0
+
+
 # Defining command functions and binding event functions
 
 def m_focus_in(event):
     """
     Function to change the middle canvas' hour and minute spinbox
      foreground colour when hovered on.
+     :param event: necessary argument in order for binding event to work
     """
     m_hour_spin_box.config(fg='black')
     m_minute_spin_box.config(fg='black')
@@ -70,14 +78,12 @@ def t_focus_out(event):
     top_hour_spin_box.config(fg='gray')
     top_minute_spin_box.config(fg='gray')
 
-
 def submit_button_hover_in(event):
     """
     Binding event function to update submit button in calendar,
     when it is hovered on.
     """
     submit_button.config(bg='white', font=('consolas', 14, 'italic'))
-
 
 def submit_button_hover_out(event):
     """
@@ -86,22 +92,79 @@ def submit_button_hover_out(event):
     """
     submit_button.config(bg='SystemButtonFace', font=('consolas', 14))
 
-
 def calculate_payment_button_hover_in(event):
     """
-    Function to change colour and font style of calculate payment button
+    Function to change colour and font style of calculate payment button and status bar
     when hovered on.
     """
     calc_payment_button.config(font=('consolas', 20, 'italic'), bg='white')
-
+    status_bar_left.config(text='Calculate payment based on info provided...', font=('consolas', 10, 'italic'))
 
 def calculate_payment_button_hover_out(event):
     """
-    Function to change calculate payment button's colour and font style
+    Function to change calculate payment button's colour, font style and status bar
     back to normal when mouse pointer is no longer hovering on the button.
     """
     calc_payment_button.config(font=('consolas', 20), bg='SystemButtonFace')
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
 
+def save_button_hover_in(event):
+    """
+    Binding event function to update save button's color, size and status bar
+    when mouse pointer hovers on it.
+    """
+    global save_icon, save_button, sb_window
+    bottom_canvas.delete(sb_window)
+    save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 65), Image.ANTIALIAS))
+    save_button = Button(bottom_canvas, image=save_icon, bg='white', command=save_to_excel)
+    sb_window = bottom_canvas.create_window(490, 160, window=save_button)
+    save_button.bind('<Leave>', save_button_hover_out)
+
+    # Update status bar
+    status_bar_left.config(text='Save payment info to excel file...', font=('consolas', 11, 'italic'))
+
+def save_button_hover_out(event):
+    """
+    Binding event function to return save button to normal when hovered out of.
+    :param event: necessary argument for binding event to work.
+    """
+    global save_icon, save_button, sb_window
+    bottom_canvas.delete(sb_window)
+    save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 60), Image.ANTIALIAS))
+    save_button = Button(bottom_canvas, image=save_icon, bg='SystemButtonFace', command=save_to_excel)
+    sb_window = bottom_canvas.create_window(490, 160, window=save_button)
+    save_button.bind('<Enter>', save_button_hover_in)
+
+    # Update status bar again
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
+
+def reset_button_hover_in(event):
+    """
+    Function to update reset button and status bar when hovered on.
+    """
+    global reset_icon, reset_button, r_window
+    bottom_canvas.delete(r_window)
+    reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((60, 65), Image.ANTIALIAS))
+    reset_button = Button(bottom_canvas, image=reset_icon, bg='white', command=reset_values)
+    r_window = bottom_canvas.create_window(60, 160, window=reset_button)
+    reset_button.bind('<Leave>', reset_button_hover_out)
+
+    # Update status bar
+    status_bar_left.config(text='Reset calculation value...', font=('consolas', 12, 'italic'))
+
+def reset_button_hover_out(event):
+    """
+    Function to update reset button and status bar back to normal when hovered out of.
+    """
+    global reset_icon, reset_button, r_window
+    bottom_canvas.delete(r_window)
+    reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((60, 60), Image.ANTIALIAS))
+    reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
+    r_window = bottom_canvas.create_window(60, 160, window=reset_button)
+    reset_button.bind('<Enter>', reset_button_hover_in)
+
+    # Update status bar
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
 
 def open_calendar(canvas):
     """
@@ -183,7 +246,7 @@ def status_bar_time_update():
     Function to update the time in the status bar through a thread.
     """
     cur_time = dt.now().strftime('%H:%M:%S')
-    status_bar_right.config(text='System Time(24hrs): ' + cur_time)
+    status_bar_right.config(text='|System Time(24h): ' + cur_time)
     status_bar_right.after(1000, status_bar_time_update)
 
 
@@ -276,7 +339,7 @@ def reset_values():
     """
     Function to reset dates, time and amount calculated.
     """
-    global amount_label, calc_payment_button, amount_to_be_paid, invalid_label
+    global calc_payment_button
     bottom_canvas.delete(amount_label)
     bottom_canvas.delete(invalid_label)
     # middle_canvas.delete(date_window2)
@@ -284,8 +347,62 @@ def reset_values():
     calc_payment_button.config(state=NORMAL)
 
 
+def save_to_excel():
+    """
+    Function to save date/time started and completed and payment calculated
+    to an excel file.
+    """
+    dir_location = askdirectory(initialdir='.\\', title='Select Directory To Save To')
 
-# TOP CANVAS----------------------------------------------------------
+    # Change location to the user-chosen one
+    os.chdir(dir_location)
+
+    # Search for already existing file
+    for item in os.listdir():
+        if item != 'payment_history.xlsx' and item == os.listdir()[-1]:
+            print('Creating new file')
+            # Call create new file function here
+
+        elif item == 'payment_history.xlsx':
+            print('already exists.')
+            # Call existing file function here
+            break
+
+
+    # 3. If user saves for first time and clicks again, go to that already opened file
+
+
+    def create_new_file():
+        workbook = openpyxl.Workbook()
+        sheet = workbook['Sheet']
+        sheet['A1'] = 'Date/Time Started'
+        sheet['B1'] = 'Date/Time Completed'
+        sheet['C1'] = 'Time Info was Saved'
+
+        # Code to add information to cells
+
+        workbook.save('payment_history.xlsx')
+        workbook.close()
+        print('Done with new excel file')
+
+
+    def edit_existing_file():
+        workbook = openpyxl.load_workbook('payment_history.xlsx')
+        sheet = workbook['Sheet']
+
+
+        # Code to add info to cells
+
+        workbook.save('payment_history.xlsx')
+        workbook.close()
+        print('Done with existing excel file')
+
+
+
+
+
+
+# TOP CANVAS------------------------------------------------------------------------------------
 
 top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 top_canvas.grid(row=0, column=0, sticky=W+E, columnspan=2)
@@ -397,11 +514,11 @@ middle_canvas.create_window(490, 160, window=cancel_button2)
 
 
 
-# BOTTOM CANVAS---------------------------------------------------------
+# BOTTOM CANVAS----------------------------------------------------------------------------
 
 bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W+E)
-img3 = ImageTk.PhotoImage(Image.open('images/money.jpg').resize((600,400)), Image.ANTIALIAS)
+img3 = ImageTk.PhotoImage(Image.open('images/money.jpg').resize((600, 400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
 bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25),)
 
@@ -413,23 +530,26 @@ calc_payment_button.bind('<Enter>', calculate_payment_button_hover_in)
 calc_payment_button.bind('<Leave>', calculate_payment_button_hover_out)
 
 # Reset Button
-reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((70, 65), Image.ANTIALIAS))
+reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((60, 60), Image.ANTIALIAS))
 reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
-bottom_canvas.create_window(60, 160, window=reset_button)
+r_window = bottom_canvas.create_window(60, 160, window=reset_button)
+reset_button.bind('<Enter>', reset_button_hover_in)
+reset_button.bind('<Leave>', reset_button_hover_out)
 
 
 # Save to Excel Button
-save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((70, 65), Image.ANTIALIAS))
-save_button = Button(bottom_canvas, image=save_icon)
-bottom_canvas.create_window(490, 160, window=save_button)
+save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 60), Image.ANTIALIAS))
+save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
+sb_window = bottom_canvas.create_window(490, 160, window=save_button)
+save_button.bind('<Enter>', save_button_hover_in)
+save_button.bind('<Leave>', save_button_hover_out)
 
 
 
 
-
-# STATUS BAR-------------------------------------------
+# STATUS BAR--------------------------------------------------------------------------------
 global left_status_text, date_and_time_text, status_bar
-rate_text = 'Rate: 1hr = $5.00'
+
 
 # Left Status bar text
 status_bar_left = Label(root, text=rate_text, font=('consolas', 12), bg='#5fc29e', anchor=W)
@@ -449,6 +569,7 @@ if __name__ == '__main__':
     root.mainloop()
 
     # TODO: 1. Add save to Excel feature.
-    #       2. Add more binding hover events that increase button size or highlight colour
-    #       3. Maybe change button and label locations for top and middle canvas
+    #       3. Maybe change button and label locations for top and middle canvas.
+    #       4. Add 'get current time' button. - HIGH PRIORITY
+    #       5. Update left section of status bar when mouse pointer hovers on checkmark and cancel buttons.
 
