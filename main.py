@@ -15,8 +15,6 @@ import openpyxl
 import os
 import threading
 
-
-
 # MAIN WINDOW CONFIGURATIONS
 
 root = Tk()
@@ -26,9 +24,8 @@ ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 root.minsize(ROOT_WIDTH, ROOT_HEIGHT)  # Preventing user from increasing or reducing app size
-root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)   # as most widgets are statically placed!
+root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)  # as most widgets are statically placed!
 root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar too.
-
 
 # GLOBAL VARIABLES------------
 
@@ -46,42 +43,41 @@ amount_to_be_paid = 0.0
 
 # Excel stuff
 excel_first_time_open = 0
+
+
 # -----------------------------
 
 # DEFINING BINDING EVENT FUNCTIONS
 
-def m_focus_in(event):
+def spin_box_hover_in(event, spin_box):
     """
-    Function to change the middle canvas' hour and minute spinbox
-     foreground colour when hovered on.
-     :param event: necessary argument in order for binding event to work
-    """
-    m_hour_spin_box.config(fg='black')
-    m_minute_spin_box.config(fg='black')
+    Function to change the spinbox's foreground colour and status bar when hovered on.
 
-def m_focus_out(event):
+    :param event: necessary argument in order for binding event to work.
+    :param spin_box: spin box object that is passed in to be updated.
     """
-    Function to change middle canvas' hour and minute spinbox foreground colour
-    when mouse pointer is no longer hovering on it.
-    """
-    m_hour_spin_box.config(fg='gray')
-    m_minute_spin_box.config(fg='gray')
+    spin_box.config(fg='black')
 
-def t_focus_in(event):
-    """
-    Function to change the top canvas'  hour and minute spinbox foreground
-     colour when hovered on.
-    """
-    top_hour_spin_box.config(fg='black')
-    top_minute_spin_box.config(fg='black')
+    # I couldn't find a simpler way to do the code below
+    if spin_box == root.winfo_children()[0].winfo_children()[0] \
+            or spin_box == root.winfo_children()[1].winfo_children()[0]:  # Simply if spin box in focus is the hour
+        status_bar_left.config(text='Set the hour...', font=('consolas', 12, 'italic'))
 
-def t_focus_out(event):
+    elif spin_box == root.winfo_children()[0].winfo_children()[1] \
+            or spin_box == root.winfo_children()[1].winfo_children()[1]:  # Simply if spin box in focus is the minutes
+        status_bar_left.config(text='Set the minutes...', font=('consolas', 12, 'italic'))
+
+
+def spin_box_hover_out(event, spin_box):
     """
-    Function to change top canvas' hour and minute spinbox foreground colour
-    when mouse pointer is no longer hovering on it.
+    Function to change the spinbox's foreground color back to normal.
+
+    :param event: necessary argument in order for binding event to work.
+    :param spin_box: spin box object that is passed in to be updated.
     """
-    top_hour_spin_box.config(fg='gray')
-    top_minute_spin_box.config(fg='gray')
+    spin_box.config(fg='gray')
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
+
 
 def submit_button_hover_in(event):
     """
@@ -90,12 +86,14 @@ def submit_button_hover_in(event):
     """
     submit_button.config(bg='white', font=('consolas', 14, 'italic'))
 
+
 def submit_button_hover_out(event):
     """
     Binding event function to update submit button in calendar,
     when it is hovered out of.
     """
     submit_button.config(bg='SystemButtonFace', font=('consolas', 14))
+
 
 def calculate_payment_button_hover_in(event):
     """
@@ -105,6 +103,7 @@ def calculate_payment_button_hover_in(event):
     calc_payment_button.config(font=('consolas', 20, 'italic'), bg='white')
     status_bar_left.config(text='Calculate payment based on info provided...', font=('consolas', 10, 'italic'))
 
+
 def calculate_payment_button_hover_out(event):
     """
     Function to change calculate payment button's colour, font style and status bar
@@ -113,6 +112,7 @@ def calculate_payment_button_hover_out(event):
     calc_payment_button.config(font=('consolas', 20), bg='SystemButtonFace')
     status_bar_left.config(text=rate_text, font=('consolas', 12))
 
+
 def save_button_hover_in(event):
     """
     Binding event function to update save button's color, size and status bar
@@ -120,18 +120,18 @@ def save_button_hover_in(event):
     """
     global save_icon, save_button, sb_window
     bottom_canvas.delete(sb_window)
-    save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 65), Image.ANTIALIAS))
-    save_button = Button(bottom_canvas, image=save_icon, bg='white', command=save_to_excel)
+    save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((70, 65), Image.ANTIALIAS))
+    save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
     sb_window = bottom_canvas.create_window(490, 160, window=save_button)
     save_button.bind('<Leave>', save_button_hover_out)
 
     # Update status bar
     status_bar_left.config(text='Save payment info to excel file...', font=('consolas', 11, 'italic'))
 
+
 def save_button_hover_out(event):
     """
     Binding event function to return save button to normal when hovered out of.
-    :param event: necessary argument for binding event to work.
     """
     global save_icon, save_button, sb_window
     bottom_canvas.delete(sb_window)
@@ -143,19 +143,21 @@ def save_button_hover_out(event):
     # Update status bar again
     status_bar_left.config(text=rate_text, font=('consolas', 12))
 
+
 def reset_button_hover_in(event):
     """
     Function to update reset button and status bar when hovered on.
     """
     global reset_icon, reset_button, r_window
     bottom_canvas.delete(r_window)
-    reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((60, 65), Image.ANTIALIAS))
-    reset_button = Button(bottom_canvas, image=reset_icon, bg='white', command=reset_values)
+    reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((65, 65), Image.ANTIALIAS))
+    reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
     r_window = bottom_canvas.create_window(60, 160, window=reset_button)
     reset_button.bind('<Leave>', reset_button_hover_out)
 
     # Update status bar
-    status_bar_left.config(text='Reset calculation value...', font=('consolas', 12, 'italic'))
+    status_bar_left.config(text='Reset calculation...', font=('consolas', 12, 'italic'))
+
 
 def reset_button_hover_out(event):
     """
@@ -172,11 +174,88 @@ def reset_button_hover_out(event):
     status_bar_left.config(text=rate_text, font=('consolas', 12))
 
 
+def calendar_button_hover_in(event, canvas):
+    """
+    Function to update the calendar button when it is hovered on.
+    """
+
+    # Created 2 separate instances because of conflict between them when they both use the same resources.
+    if canvas == root.winfo_children()[0]:  # this is top canvas
+        global cl_window, calendar_button, cal_icon
+        canvas.delete(cl_window)
+        cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((55, 55), Image.ANTIALIAS))
+        calendar_button = Button(canvas, image=cal_icon, bg='light gray', command=lambda: open_calendar(canvas))
+        cl_window = canvas.create_window(180, 110, window=calendar_button)
+        calendar_button.bind('<Leave>', lambda e: calendar_button_hover_out(e, canvas))
+
+    else:
+        global cl_window2, cale_icon, calendar_button2
+        canvas.delete(cl_window2)
+        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((55, 55), Image.ANTIALIAS))
+        calendar_button2 = Button(canvas, image=cale_icon, bg='light gray', command=lambda: open_calendar(canvas))
+        cl_window2 = canvas.create_window(180, 110, window=calendar_button2)
+        calendar_button2.bind('<Leave>', lambda e: calendar_button_hover_out(e, canvas))
+
+    status_bar_left.config(text='Pick a date from the calendar...', font=('consolas', 12, 'italic'))
+
+
+def calendar_button_hover_out(event, canvas):
+    """
+    Function to update the calendar button when it is hovered out of.
+    """
+    if canvas == root.winfo_children()[0]:  # top canvas
+        global cl_window, calendar_button, cal_icon
+        canvas.delete(cl_window)
+        cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+        calendar_button = Button(canvas, image=cal_icon, bg='light gray', command=lambda: open_calendar(canvas))
+        cl_window = canvas.create_window(180, 110, window=calendar_button)
+        calendar_button.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
+
+    else:
+        global cl_window2, cale_icon, calendar_button2
+        canvas.delete(cl_window2)
+        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+        calendar_button2 = Button(canvas, image=cale_icon, bg='light gray', command=lambda: open_calendar(canvas))
+        cl_window2 = canvas.create_window(180, 110, window=calendar_button2)
+        calendar_button2.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
+
+    status_bar_left.config(text=rate_text)
+
+
+def confirm_button_hover_in(event, canvas):
+    """
+    Function to update the confirm button when it is hovered on.
+    """
+    pass
+
+
+def confirm_button_hover_out(event, canvas):
+    """
+    Function to update the confirm button when it is hovered out of.
+    """
+    pass
+
+
+def cancel_button_hover_in(event, canvas):
+    """
+    Function to update the cancel button when it is hovered on.
+    """
+    pass
+
+def cancel_button_hover_out(event, canvas):
+    """
+    Function to update the cancel button when it is hovered out of.
+    """
+    pass
+
+
+
 # DEFINING COMMAND FUNCTIONS
 
 def open_calendar(canvas):
     """
     Command function to open calendar for user to choose a date.
+
     :param: canvas: canvas object for the function to know which canvas called it and
                     give it specific attributes.
     """
@@ -221,7 +300,6 @@ def open_calendar(canvas):
                 temp2 = temp[1] + '/' + temp[0] + '/' + temp[2]
                 date_from_calendar2 = temp2
 
-
             selected_label = Label(cal_window, text='Date Selected!', font=('consolas', 14, 'italic'),
                                    bg='#5fc29e')
             selected_label.pack(pady=5)
@@ -261,43 +339,53 @@ def status_bar_time_update():
 def confirm_button_click(canvas):
     """
     Command function to display user's choice of date and time on the canvas provided.
+
     :param canvas: canvas object to know which canvas called it and attribute specific
                     configurations to it or some other global variables.
     """
     global date_window, date_window2
 
-    # Add check to make sure only 2 digits are accepted for both spin boxes
-
     if canvas == top_canvas:
         global selected_date_label, s_time
-        if (0 <= int(top_hour_spin_box.get()) <= 9) and (0 <= int(top_minute_spin_box.get()) <= 9):
-            s_time = '0' + top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-        elif 0 <= int(top_minute_spin_box.get()) <= 9:  # append 0 if single number
-            s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-        elif 0 <= int(top_hour_spin_box.get()) <= 9:
-            s_time = '0' + top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+
+        if len(top_hour_spin_box.get()) > 2 or len(top_minute_spin_box.get()) > 2:
+            messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
+
         else:
-            s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
-        selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
-        date_window = canvas.create_window(225, 170, window=selected_date_label)
+            if (0 <= int(top_hour_spin_box.get()) <= 9) and (0 <= int(top_minute_spin_box.get()) <= 9):
+                s_time = '0' + top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
+            elif 0 <= int(top_minute_spin_box.get()) <= 9:  # append 0 if single number
+                s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
+            elif 0 <= int(top_hour_spin_box.get()) <= 9:
+                s_time = '0' + top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+            else:
+                s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+            selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
+            date_window = canvas.create_window(225, 170, window=selected_date_label)
 
     elif canvas == middle_canvas:
         global selected_date_label2, s_time2
-        if (0 <= int(m_minute_spin_box.get()) <= 9) and (0 <= int(m_hour_spin_box.get()) <= 9):
-            s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-        elif 0 <= int(m_minute_spin_box.get()) <= 9:  # append 0 if single number
-            s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-        elif 0 <= int(m_hour_spin_box.get()) <= 9:
-            s_time2 = '0' + m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+
+        if len(m_hour_spin_box.get()) > 2 or len(m_minute_spin_box.get()) > 2:
+            messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
+
         else:
-            s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
-        selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
-        date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
+            if (0 <= int(m_minute_spin_box.get()) <= 9) and (0 <= int(m_hour_spin_box.get()) <= 9):
+                s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
+            elif 0 <= int(m_minute_spin_box.get()) <= 9:  # append 0 if single number
+                s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
+            elif 0 <= int(m_hour_spin_box.get()) <= 9:
+                s_time2 = '0' + m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+            else:
+                s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+            selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
+            date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
 
 
 def cancel_button_click(canvas):
     """
     Command function to remove label/text telling user his choice of date and time.
+
     :param canvas: canvas object to know which canvas called it and update specific labels.
     """
     if canvas == middle_canvas:
@@ -332,16 +420,14 @@ def payment_calculation():
 
     hours_to_mins = hours_elapsed * 60
     total_minutes_elapsed = minutes_elapsed + hours_to_mins
-    amount_to_be_paid = round(float(total_minutes_elapsed * 1/12), 2)
+    amount_to_be_paid = round(float(total_minutes_elapsed * 1 / 12), 2)
 
     if total_minutes_elapsed < 0:
-        invalid_label = bottom_canvas.create_text(280, 150, text='Invalid Information Provided',
-                                                  font=('consolas', 16, 'bold'), fill='red')
+        messagebox.showerror(title='INVALID ARGUMENT', message='INVALID INFORMATION ENTERED!')
         calc_payment_button.config(state=DISABLED)
-        calc_payment_button.bell()
     else:
         amount_label = bottom_canvas.create_text(270, 150, text='$' + str(amount_to_be_paid),
-                                                 font=('consolas', 40, 'bold'), fill='black')
+                                                 font=('consolas', 40, 'bold'), fill='#e8ebea')
         calc_payment_button.config(state=DISABLED)
 
 
@@ -352,8 +438,8 @@ def reset_values():
     global calc_payment_button
     bottom_canvas.delete(amount_label)
     bottom_canvas.delete(invalid_label)
-    # middle_canvas.delete(date_window2)
-    # top_canvas.delete(date_window)
+    middle_canvas.delete(date_window2)
+    top_canvas.delete(date_window)
     calc_payment_button.config(state=NORMAL)
 
 
@@ -366,7 +452,7 @@ def save_to_excel():
 
     def create_new_file():
         """
-        Function to create new excel file and input information from app
+        Function to create new excel file and input information from app.
         """
         workbook = openpyxl.Workbook()
         sheet = workbook['Sheet']
@@ -378,6 +464,10 @@ def save_to_excel():
         sheet['D1'] = 'Time Completed'
         sheet['E1'] = 'Calculated Payment'
         sheet['F1'] = 'Time Info was Saved'
+
+        # Increase width for better view
+        for cols in ['A', 'B', 'C', 'D', 'E', 'F']:
+            sheet.column_dimensions[cols].width = 20
 
         # This is the first time so we can write specifically to certain cells
         sheet['A2'] = date_from_calendar
@@ -393,7 +483,6 @@ def save_to_excel():
 
         # Message box for successful entry
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to excel file!')
-
 
     def edit_existing_file():
         """
@@ -429,10 +518,8 @@ def save_to_excel():
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to excel file!')
 
     # Main Excel Logic
-    if excel_first_time_open == 0:  # Save button has been clicked already
+    if excel_first_time_open == 0:  # Save button has not been clicked already
         dir_location = askdirectory(initialdir='.\\', title='Select Directory To Save To')
-        print('opening')
-        # exit()
 
         # Change location to the user-chosen one
         os.chdir(dir_location)
@@ -445,33 +532,25 @@ def save_to_excel():
             elif item == 'payment_history.xlsx':
                 edit_existing_file()
                 break
-
     else:
         edit_existing_file()
 
-    print('Done with excel stuff')
     excel_first_time_open += 1
-
-
-
-
-
 
 
 # TOP CANVAS------------------------------------------------------------------------------------
 
 top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
-top_canvas.grid(row=0, column=0, sticky=W+E, columnspan=2)
+top_canvas.grid(row=0, column=0, sticky=W + E, columnspan=2)
 img1 = ImageTk.PhotoImage(Image.open('images/clock_dark.jfif'), Image.ANTIALIAS)
 top_canvas.create_image(0, 0, image=img1, anchor=NW)
 top_canvas.create_text(270, 30, text='Date/Time Started', font=('android 7', 25))
 
-
 # Top Canvas Hour Spin Box
 top_hour_spin_box = Spinbox(top_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
 top_canvas.create_window(340, 100, window=top_hour_spin_box)
-top_hour_spin_box.bind('<Enter>', t_focus_in)
-top_hour_spin_box.bind('<Leave>', t_focus_out)
+top_hour_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, top_hour_spin_box))
+top_hour_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, top_hour_spin_box))
 
 # Semicolon separating minute from hours
 top_canvas.create_text(375, 100, text=':', font=('android 7', 25, 'bold'), fill='white')
@@ -479,8 +558,8 @@ top_canvas.create_text(375, 100, text=':', font=('android 7', 25, 'bold'), fill=
 # Top Canvas Minute Spin Box
 top_minute_spin_box = Spinbox(top_canvas, from_=0, to=59, width=2, font=('consolas', 20), fg='gray')
 top_canvas.create_window(410, 100, window=top_minute_spin_box)
-top_minute_spin_box.bind('<Enter>',  t_focus_in)
-top_minute_spin_box.bind('<Leave>', t_focus_out)
+top_minute_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, top_minute_spin_box))
+top_minute_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, top_minute_spin_box))
 
 # Time text
 top_canvas.create_text(280, 100, text='Time:', font=('consolas', 20))
@@ -489,9 +568,11 @@ top_canvas.create_text(280, 100, text='Time:', font=('consolas', 20))
 top_canvas.create_text(110, 100, text='Date:', font=('consolas', 20))
 
 # Calendar button for top canvas
-t_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50,50), Image.ANTIALIAS))
+t_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
 t_calendar_button = Button(top_canvas, image=t_cal_icon, bg='light gray', command=lambda: open_calendar(top_canvas))
-top_canvas.create_window(180, 110, window=t_calendar_button)
+cl_window = top_canvas.create_window(180, 110, window=t_calendar_button)
+t_calendar_button.bind('<Enter>', lambda event: calendar_button_hover_in(event, top_canvas))
+t_calendar_button.bind('<Leave>', lambda event: calendar_button_hover_out(event, top_canvas))
 
 # Selected date and time text
 s_time = ''
@@ -508,23 +589,18 @@ cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60
 cancel_button = Button(top_canvas, image=cancel_icon, command=lambda: cancel_button_click(top_canvas))
 top_canvas.create_window(490, 160, window=cancel_button)
 
-
-
-
-
 # MIDDLE CANVAS--------------------------------------------------------------
 
-middle_canvas = Canvas(root,width=ROOT_WIDTH, height=200, borderwidth=0)
-middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W+E)
+middle_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
+middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W + E)
 img2 = ImageTk.PhotoImage(Image.open('images/time_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
-middle_canvas.create_image(0,0, image=img2, anchor=NW)
+middle_canvas.create_image(0, 0, image=img2, anchor=NW)
 middle_canvas.create_text(280, 26, text='Date/Time Completed', font=('android 7', 25), fill='#e8ebea')
-
 
 # Middle Canvas Hour Spin Box
 m_hour_spin_box = Spinbox(middle_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
-m_hour_spin_box.bind('<Enter>', m_focus_in)
-m_hour_spin_box.bind('<Leave>', m_focus_out)
+m_hour_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, m_hour_spin_box))
+m_hour_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, m_hour_spin_box))
 middle_canvas.create_window(340, 100, window=m_hour_spin_box)
 
 # Semicolon separating minute from hours
@@ -533,8 +609,8 @@ middle_canvas.create_text(375, 100, text=':', font=('android 7', 25, 'bold'), fi
 # Middle Canvas Minute Spin Box
 m_minute_spin_box = Spinbox(middle_canvas, from_=0, to=59, width=2, font=('consolas', 20), fg='gray')
 middle_canvas.create_window(410, 100, window=m_minute_spin_box)
-m_minute_spin_box.bind('<Enter>', m_focus_in)
-m_minute_spin_box.bind('<Leave>', m_focus_out)
+m_minute_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, m_minute_spin_box))
+m_minute_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, m_minute_spin_box))
 
 # Time text
 middle_canvas.create_text(280, 100, text='Time:', font=('consolas', 20), fill='#e8ebea')
@@ -547,8 +623,9 @@ middle_canvas.create_text(110, 100, text='Date:', font=('consolas', 20), fill='#
 m_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
 m_calendar_button = Button(middle_canvas, image=m_cal_icon, bg='light gray',
                            command=lambda: open_calendar(middle_canvas))
-middle_canvas.create_window(180, 110, window=m_calendar_button)
-
+cl_window2 = middle_canvas.create_window(180, 110, window=m_calendar_button)
+m_calendar_button.bind('<Enter>', lambda event: calendar_button_hover_in(event, middle_canvas))
+m_calendar_button.bind('<Leave>', lambda event: calendar_button_hover_out(event, middle_canvas))
 
 # Selected date and time text
 s_time2 = ''
@@ -565,18 +642,13 @@ cancel_icon2 = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((6
 cancel_button2 = Button(middle_canvas, image=cancel_icon2, command=lambda: cancel_button_click(middle_canvas))
 middle_canvas.create_window(490, 160, window=cancel_button2)
 
-
-
-
-
-
 # BOTTOM CANVAS-----------------------------------------------------------------------------------
 
 bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
-bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W+E)
+bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W + E)
 img3 = ImageTk.PhotoImage(Image.open('images/money_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
-bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25),)
+bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25), )
 
 # Calculate Payment Button
 calc_payment_button = Button(bottom_canvas, text='Calculate Payment', font=('consolas', 20),
@@ -592,7 +664,6 @@ r_window = bottom_canvas.create_window(60, 160, window=reset_button)
 reset_button.bind('<Enter>', reset_button_hover_in)
 reset_button.bind('<Leave>', reset_button_hover_out)
 
-
 # Save to Excel Button
 save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 60), Image.ANTIALIAS))
 save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
@@ -600,17 +671,12 @@ sb_window = bottom_canvas.create_window(490, 160, window=save_button)
 save_button.bind('<Enter>', save_button_hover_in)
 save_button.bind('<Leave>', save_button_hover_out)
 
-
-
-
 # STATUS BAR--------------------------------------------------------------------------------
 global left_status_text, date_and_time_text, status_bar
-
 
 # Left Status bar text
 status_bar_left = Label(root, text=rate_text, font=('consolas', 12), bg='#5fc29e', anchor=W)
 status_bar_left.grid(row=3, column=0, sticky=W)
-
 
 # Right status bar text
 status_bar_right = Label(root, text='', font=('consolas', 12), bg='#5fc29e', anchor=E)
@@ -624,8 +690,6 @@ threading.Thread(target=status_bar_time_update).start()
 if __name__ == '__main__':
     root.mainloop()
 
-    # TODO: 1. Add save to Excel feature.
-    #       3. Maybe change button and label locations for top and middle canvas.
+    # TODO: 3. Maybe change button and label locations for top and middle canvas.
     #       4. Add 'get current time' button. - HIGH PRIORITY
     #       5. Update left section of status bar when mouse pointer hovers on checkmark and cancel buttons.
-
