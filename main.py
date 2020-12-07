@@ -23,9 +23,11 @@ root.iconbitmap('images/cat.ico')
 ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
-root.minsize(ROOT_WIDTH, ROOT_HEIGHT)  # Preventing user from increasing or reducing app size
-root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)  # as most widgets are statically placed!
+# Preventing user from increasing or reducing app size as most widgets are statically placed!
+root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
+root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
 root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar too.
+
 
 # GLOBAL VARIABLES------------
 
@@ -552,6 +554,7 @@ def payment_calculation():
     Rate: $5 for 60mins (1hr).
     """
     # Do nothing with dates for now since both dates(date started and date completed) will be the same.
+    # NB: If User selects different dates, app only checks time regardless.
 
     global amount_label, calc_payment_button, amount_to_be_paid, s_time, s_time2
     amount_label = bottom_canvas.create_text(250, 150, text='')
