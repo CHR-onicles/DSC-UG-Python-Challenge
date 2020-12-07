@@ -32,6 +32,10 @@ as well as **2** spinboxes( to set the **hours** and **minutes**).
 
 ## SCREENSHOTS:
 <img src = "images/ss1.png" width = 500>
+
 <img src = "images/ss2.png" width = 500>
+
 <img src = "images/ss3.png" width = 500>
+
+- Excel File information was saved to from App:
 <img src = "images/ss_saved_info_excel.png" width = 600>
