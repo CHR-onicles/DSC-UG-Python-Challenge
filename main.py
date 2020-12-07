@@ -214,7 +214,7 @@ def calendar_button_hover_out(event, canvas):
         cl_window2 = canvas.create_window(136, 100, window=calendar_button2)
         calendar_button2.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
 
-    status_bar_left.config(text=rate_text)
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
 
 
 def confirm_button_hover_in(event, canvas):
@@ -259,7 +259,7 @@ def confirm_button_hover_out(event, canvas):
         cf_window2 = canvas.create_window(490, 90, window=check_button2)
         check_button2.bind('<Enter>', lambda e: confirm_button_hover_in(e, canvas))
 
-    status_bar_left.config(text=rate_text)
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
 
 
 def cancel_button_hover_in(event, canvas):
@@ -822,7 +822,7 @@ bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W + E)
 img3 = ImageTk.PhotoImage(Image.open('images/money_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
-bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25))
+bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25), fill='#e8ebea')
 
 # Calculate Payment Button
 calc_payment_button = Button(bottom_canvas, text='Calculate Payment', font=('consolas', 20),
@@ -868,6 +868,5 @@ if __name__ == '__main__':
     root.mainloop()
 
     # TODO:
-    #       4. Take Screenshots and possible video recordings to update README.
     #       5. Finish README. - HIGH PRIORITY
 
