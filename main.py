@@ -26,7 +26,7 @@ root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 # Preventing user from increasing or reducing app size as most widgets are statically placed!
 root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
 root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar too.
+root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar.
 
 
 # GLOBAL VARIABLES------------
@@ -176,7 +176,8 @@ def calendar_button_hover_in(event, canvas):
     Function to update the calendar button when it is hovered on.
     """
 
-    # Created 2 separate instances because of conflict between them when they both use the same resources.
+    # Created 2 separate instances of the hover event because of conflict between them when they both use the same
+    # resources.
     if canvas == top_canvas:  # this is top canvas
         global cl_window, calendar_button, cal_icon
         canvas.delete(cl_window)
@@ -186,10 +187,10 @@ def calendar_button_hover_in(event, canvas):
         calendar_button.bind('<Leave>', lambda e: calendar_button_hover_out(e, canvas))
 
     else:
-        global cl_window2, cale_icon, calendar_button2
+        global cl_window2, cal_icon2, calendar_button2
         canvas.delete(cl_window2)
-        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
-        calendar_button2 = Button(canvas, image=cale_icon, bg='light gray', command=lambda: open_calendar(canvas))
+        cal_icon2 = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+        calendar_button2 = Button(canvas, image=cal_icon2, bg='light gray', command=lambda: open_calendar(canvas))
         cl_window2 = canvas.create_window(136, 100, window=calendar_button2)
         calendar_button2.bind('<Leave>', lambda e: calendar_button_hover_out(e, canvas))
 
@@ -209,10 +210,10 @@ def calendar_button_hover_out(event, canvas):
         calendar_button.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
 
     else:  # middle canvas
-        global cl_window2, cale_icon, calendar_button2
+        global cl_window2, cal_icon2, calendar_button2
         canvas.delete(cl_window2)
-        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
-        calendar_button2 = Button(canvas, image=cale_icon, bg='light gray', command=lambda: open_calendar(canvas))
+        cal_icon2 = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
+        calendar_button2 = Button(canvas, image=cal_icon2, bg='light gray', command=lambda: open_calendar(canvas))
         cl_window2 = canvas.create_window(136, 100, window=calendar_button2)
         calendar_button2.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
 
@@ -223,7 +224,7 @@ def confirm_button_hover_in(event, canvas):
     """
     Function to update the confirm button when it is hovered on.
     """
-    if canvas == top_canvas:  # top canvas
+    if canvas == top_canvas:
         global c_icon, check_button, cf_window
         canvas.delete(cf_window)
         c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((65, 65), Image.ANTIALIAS))
@@ -240,6 +241,7 @@ def confirm_button_hover_in(event, canvas):
         check_button2.bind('<Leave>', lambda e: confirm_button_hover_out(e, canvas))
 
     status_bar_left.config(text='Confirm date and time selection...', font=('consolas', 11, 'italic'))
+
 
 def confirm_button_hover_out(event, canvas):
     """
@@ -477,6 +479,7 @@ def confirm_button_click(canvas):
 
     if canvas == top_canvas:
 
+        # If user types in more than 2 numbers, generate error message
         if len(top_hour_spin_box.get()) > 2 or len(top_minute_spin_box.get()) > 2:
             messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
 
@@ -496,13 +499,14 @@ def confirm_button_click(canvas):
 
     elif canvas == middle_canvas:
 
+        # If user types in more than 2 numbers, generate error message
         if len(m_hour_spin_box.get()) > 2 or len(m_minute_spin_box.get()) > 2:
             messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
 
         else:
             if (0 <= int(m_minute_spin_box.get()) <= 9) and (0 <= int(m_hour_spin_box.get()) <= 9):
                 s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-            elif 0 <= int(m_minute_spin_box.get()) <= 9:  # append 0 if single number
+            elif 0 <= int(m_minute_spin_box.get()) <= 9:
                 s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
             elif 0 <= int(m_hour_spin_box.get()) <= 9:
                 s_time2 = '0' + m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
@@ -531,8 +535,8 @@ def get_current_date_time(canvas):
 
     :param canvas: canvas object to know which canvas called it and update its labels.
     """
-    global s_time, selected_date_label, date_window, date_window2, s_time2, selected_date_label2
-    global date_from_calendar, date_from_calendar2
+    global s_time, selected_date_label, date_window, date_window2, s_time2
+    global date_from_calendar, date_from_calendar2, selected_date_label2
 
     if canvas == top_canvas:
         date_from_calendar = dt.now().strftime('%d/%m/%y')
@@ -554,7 +558,9 @@ def payment_calculation():
     Rate: $5 for 60mins (1hr).
     """
     # Do nothing with dates for now since both dates(date started and date completed) will be the same.
-    # NB: If User selects different dates, app only checks time regardless.
+    # NB: If User selects different dates, app only checks the time regardless.
+    # Hopefully no one enters different dates and get some crazy output :)
+    # Hmmm...naa... TODO: add check for this later
 
     global amount_label, calc_payment_button, amount_to_be_paid, s_time, s_time2
     amount_label = bottom_canvas.create_text(250, 150, text='')
@@ -569,10 +575,13 @@ def payment_calculation():
     hours_elapsed = hour_completed - hour_started
     minutes_elapsed = minutes_completed - minutes_started
 
+    # Convert everything to minutes and perform calculations based on that
     hours_to_mins = hours_elapsed * 60
     total_minutes_elapsed = minutes_elapsed + hours_to_mins
     amount_to_be_paid = round(float(total_minutes_elapsed * 1 / 12), 2)
 
+    # hmmm...Might generate false positive errors since user can choose different dates
+    # TODO: Do the TODO just before this one
     if total_minutes_elapsed < 0:
         messagebox.showerror(title='INVALID ARGUMENT', message='INVALID INFORMATION ENTERED!')
         calc_payment_button.config(state=DISABLED)
@@ -631,7 +640,7 @@ def save_to_excel():
         workbook.save('payment_history.xlsx')
         workbook.close()
 
-        # Message box for successful entry
+        # Message box for successful entry to NEW file
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to NEW excel file!')
 
     def edit_existing_file():
@@ -665,6 +674,8 @@ def save_to_excel():
         # Save and close excel file
         workbook.save('payment_history.xlsx')
         workbook.close()
+
+        # Message box for successful entry to EXISTING file
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to EXISTING excel file!')
 
     # Main Excel Logic
@@ -819,6 +830,7 @@ time_now_button2.bind('<Enter>', lambda event: time_now_button_hover_in(event, m
 time_now_button2.bind('<Leave>', lambda event: time_now_button_hover_out(event, middle_canvas))
 
 
+
 # BOTTOM CANVAS-----------------------------------------------------------------------------------
 
 bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
@@ -869,7 +881,3 @@ threading.Thread(target=status_bar_time_update).start()
 # MAIN--------------------
 if __name__ == '__main__':
     root.mainloop()
-
-    # TODO:
-    #       5. Finish README. - HIGH PRIORITY
-
