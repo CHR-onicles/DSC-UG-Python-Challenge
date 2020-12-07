@@ -100,7 +100,7 @@ def calculate_payment_button_hover_in(event):
     Function to change colour and font style of calculate payment button and status bar
     when hovered on.
     """
-    calc_payment_button.config(font=('consolas', 20, 'italic'), bg='white')
+    calc_payment_button.config(font=('consolas', 22))
     status_bar_left.config(text='Calculate payment based on info provided...', font=('consolas', 10, 'italic'))
 
 
@@ -183,17 +183,17 @@ def calendar_button_hover_in(event, canvas):
     if canvas == root.winfo_children()[0]:  # this is top canvas
         global cl_window, calendar_button, cal_icon
         canvas.delete(cl_window)
-        cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((55, 55), Image.ANTIALIAS))
+        cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
         calendar_button = Button(canvas, image=cal_icon, bg='light gray', command=lambda: open_calendar(canvas))
-        cl_window = canvas.create_window(180, 110, window=calendar_button)
+        cl_window = canvas.create_window(136, 100, window=calendar_button)
         calendar_button.bind('<Leave>', lambda e: calendar_button_hover_out(e, canvas))
 
     else:
         global cl_window2, cale_icon, calendar_button2
         canvas.delete(cl_window2)
-        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((55, 55), Image.ANTIALIAS))
+        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
         calendar_button2 = Button(canvas, image=cale_icon, bg='light gray', command=lambda: open_calendar(canvas))
-        cl_window2 = canvas.create_window(180, 110, window=calendar_button2)
+        cl_window2 = canvas.create_window(136, 100, window=calendar_button2)
         calendar_button2.bind('<Leave>', lambda e: calendar_button_hover_out(e, canvas))
 
     status_bar_left.config(text='Pick a date from the calendar...', font=('consolas', 12, 'italic'))
@@ -206,17 +206,17 @@ def calendar_button_hover_out(event, canvas):
     if canvas == root.winfo_children()[0]:  # top canvas
         global cl_window, calendar_button, cal_icon
         canvas.delete(cl_window)
-        cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+        cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
         calendar_button = Button(canvas, image=cal_icon, bg='light gray', command=lambda: open_calendar(canvas))
-        cl_window = canvas.create_window(180, 110, window=calendar_button)
+        cl_window = canvas.create_window(136, 100, window=calendar_button)
         calendar_button.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
 
-    else:
+    else:  # middle canvas
         global cl_window2, cale_icon, calendar_button2
         canvas.delete(cl_window2)
-        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+        cale_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
         calendar_button2 = Button(canvas, image=cale_icon, bg='light gray', command=lambda: open_calendar(canvas))
-        cl_window2 = canvas.create_window(180, 110, window=calendar_button2)
+        cl_window2 = canvas.create_window(136, 100, window=calendar_button2)
         calendar_button2.bind('<Enter>', lambda e: calendar_button_hover_in(e, canvas))
 
     status_bar_left.config(text=rate_text)
@@ -226,27 +226,91 @@ def confirm_button_hover_in(event, canvas):
     """
     Function to update the confirm button when it is hovered on.
     """
-    pass
+    if canvas == root.winfo_children()[0]:  # top canvas
+        global c_icon, check_button, cf_window
+        canvas.delete(cf_window)
+        c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((65, 65), Image.ANTIALIAS))
+        check_button = Button(canvas, image=c_icon, command=lambda: confirm_button_click(canvas))
+        cf_window = canvas.create_window(490, 90, window=check_button)
+        check_button.bind('<Leave>', lambda e: confirm_button_hover_out(e, canvas))
 
+    else:  # middle canvas
+        global c_icon2, check_button2, cf_window2
+        canvas.delete(cf_window2)
+        c_icon2 = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((65, 65), Image.ANTIALIAS))
+        check_button2 = Button(canvas, image=c_icon2, command=lambda: confirm_button_click(canvas))
+        cf_window2 = canvas.create_window(490, 90, window=check_button2)
+        check_button2.bind('<Leave>', lambda e: confirm_button_hover_out(e, canvas))
+
+    status_bar_left.config(text='Confirm date and time selection...', font=('consolas', 11, 'italic'))
 
 def confirm_button_hover_out(event, canvas):
     """
     Function to update the confirm button when it is hovered out of.
     """
-    pass
+    if canvas == root.winfo_children()[0]:  # top canvas
+        global c_icon, check_button, cf_window
+        canvas.delete(cf_window)
+        c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
+        check_button = Button(canvas, image=c_icon, command=lambda: confirm_button_click(canvas))
+        cf_window = canvas.create_window(490, 90, window=check_button)
+        check_button.bind('<Enter>', lambda e: confirm_button_hover_in(e, canvas))
+
+    else:  # middle canvas
+        global c_icon2, check_button2, cf_window2
+        canvas.delete(cf_window2)
+        c_icon2 = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
+        check_button2 = Button(canvas, image=c_icon2, command=lambda: confirm_button_click(canvas))
+        cf_window2 = canvas.create_window(490, 90, window=check_button2)
+        check_button2.bind('<Enter>', lambda e: confirm_button_hover_in(e, canvas))
+
+    status_bar_left.config(text=rate_text)
 
 
 def cancel_button_hover_in(event, canvas):
     """
     Function to update the cancel button when it is hovered on.
     """
-    pass
+    if canvas == root.winfo_children()[0]:  # top canvas
+        global cancel_icon, cancel_button, cx_window
+        canvas.delete(cx_window)
+        cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((65, 65), Image.ANTIALIAS))
+        cancel_button = Button(canvas, image=cancel_icon, command=lambda: cancel_button_click(canvas))
+        cx_window = canvas.create_window(490, 160, window=cancel_button)
+        cancel_button.bind('<Leave>', lambda e: cancel_button_hover_out(e, canvas))
+
+    else:  # middle canvas
+        global cancel_icon2, cancel_button2, cx_window2
+        canvas.delete(cx_window2)
+        cancel_icon2 = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((65, 65), Image.ANTIALIAS))
+        cancel_button2 = Button(canvas, image=cancel_icon2, command=lambda: cancel_button_click(canvas))
+        cx_window2 = canvas.create_window(490, 160, window=cancel_button2)
+        cancel_button2.bind('<Leave>', lambda e: cancel_button_hover_out(e, canvas))
+
+    status_bar_left.config(text='Cancel date and time selected...', font=('consolas', 11, 'italic'))
+
 
 def cancel_button_hover_out(event, canvas):
     """
     Function to update the cancel button when it is hovered out of.
     """
-    pass
+    if canvas == root.winfo_children()[0]:  # top canvas
+        global cancel_icon, cancel_button, cx_window
+        canvas.delete(cx_window)
+        cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
+        cancel_button = Button(canvas, image=cancel_icon, command=lambda: cancel_button_click(canvas))
+        cx_window = canvas.create_window(490, 160, window=cancel_button)
+        cancel_button.bind('<Enter>', lambda e: cancel_button_hover_in(e, canvas))
+
+    else:  # middle canvas
+        global cancel_icon2, cancel_button2, cx_window2
+        canvas.delete(cx_window2)
+        cancel_icon2 = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
+        cancel_button2 = Button(canvas, image=cancel_icon2, command=lambda: cancel_button_click(canvas))
+        cx_window2 = canvas.create_window(490, 160, window=cancel_button2)
+        cancel_button2.bind('<Enter>', lambda e: cancel_button_hover_in(e, canvas))
+
+    status_bar_left.config(text=rate_text)
 
 
 
@@ -400,7 +464,7 @@ def payment_calculation():
     """
     Function to calculate payment amount based on the date and time passed in
     by user.
-    Rate: $5 for 60mins (1hr)
+    Rate: $5 for 60mins (1hr).
     """
     # Do nothing with dates for now since both dates(date started and date completed) will be the same.
 
@@ -548,29 +612,29 @@ top_canvas.create_text(270, 30, text='Date/Time Started', font=('android 7', 25)
 
 # Top Canvas Hour Spin Box
 top_hour_spin_box = Spinbox(top_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
-top_canvas.create_window(340, 100, window=top_hour_spin_box)
+top_canvas.create_window(290, 100, window=top_hour_spin_box)
 top_hour_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, top_hour_spin_box))
 top_hour_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, top_hour_spin_box))
 
 # Semicolon separating minute from hours
-top_canvas.create_text(375, 100, text=':', font=('android 7', 25, 'bold'), fill='white')
+top_canvas.create_text(323, 100, text=':', font=('android 7', 25, 'bold'), fill='white')
 
 # Top Canvas Minute Spin Box
 top_minute_spin_box = Spinbox(top_canvas, from_=0, to=59, width=2, font=('consolas', 20), fg='gray')
-top_canvas.create_window(410, 100, window=top_minute_spin_box)
+top_canvas.create_window(355, 100, window=top_minute_spin_box)
 top_minute_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, top_minute_spin_box))
 top_minute_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, top_minute_spin_box))
 
 # Time text
-top_canvas.create_text(280, 100, text='Time:', font=('consolas', 20))
+top_canvas.create_text(225, 100, text='Time:', font=('consolas', 20))
 
 # Date text
-top_canvas.create_text(110, 100, text='Date:', font=('consolas', 20))
+top_canvas.create_text(70, 100, text='Date:', font=('consolas', 20))
 
 # Calendar button for top canvas
-t_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+t_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
 t_calendar_button = Button(top_canvas, image=t_cal_icon, bg='light gray', command=lambda: open_calendar(top_canvas))
-cl_window = top_canvas.create_window(180, 110, window=t_calendar_button)
+cl_window = top_canvas.create_window(136, 100, window=t_calendar_button)
 t_calendar_button.bind('<Enter>', lambda event: calendar_button_hover_in(event, top_canvas))
 t_calendar_button.bind('<Leave>', lambda event: calendar_button_hover_out(event, top_canvas))
 
@@ -579,17 +643,29 @@ s_time = ''
 selected_date_label = Label(top_canvas, text='You selected: ' + date_from_calendar + ' ' + s_time,
                             font=('consolas', 20, 'italic', 'bold'))
 
-# Checkmark icon
+# Checkmark button
 c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
 check_button = Button(top_canvas, image=c_icon, command=lambda: confirm_button_click(top_canvas))
-top_canvas.create_window(490, 90, window=check_button)
+cf_window = top_canvas.create_window(490, 90, window=check_button)
+check_button.bind('<Enter>', lambda event: confirm_button_hover_in(event, top_canvas))
+check_button.bind('<Leave>', lambda event: confirm_button_hover_out(event, top_canvas))
 
-# Cancel icon
+# Cancel button
 cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
 cancel_button = Button(top_canvas, image=cancel_icon, command=lambda: cancel_button_click(top_canvas))
-top_canvas.create_window(490, 160, window=cancel_button)
+cx_window = top_canvas.create_window(490, 160, window=cancel_button)
+cancel_button.bind('<Enter>', lambda event: cancel_button_hover_in(event, top_canvas))
+cancel_button.bind('<Leave>', lambda event: cancel_button_hover_out(event, top_canvas))
 
-# MIDDLE CANVAS--------------------------------------------------------------
+# Get Time Now button
+time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
+time_now_button = Button(top_canvas, image=time_now_icon, command='')
+tn_window = top_canvas.create_window(415, 100, window=time_now_button)
+# TODO: Add hover binding event and command function
+
+
+
+# MIDDLE CANVAS-------------------------------------------------------------------------------------
 
 middle_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W + E)
@@ -601,29 +677,29 @@ middle_canvas.create_text(280, 26, text='Date/Time Completed', font=('android 7'
 m_hour_spin_box = Spinbox(middle_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
 m_hour_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, m_hour_spin_box))
 m_hour_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, m_hour_spin_box))
-middle_canvas.create_window(340, 100, window=m_hour_spin_box)
+middle_canvas.create_window(290, 100, window=m_hour_spin_box)
 
 # Semicolon separating minute from hours
-middle_canvas.create_text(375, 100, text=':', font=('android 7', 25, 'bold'), fill='#e8ebea')
+middle_canvas.create_text(323, 100, text=':', font=('android 7', 25, 'bold'), fill='#e8ebea')
 
 # Middle Canvas Minute Spin Box
 m_minute_spin_box = Spinbox(middle_canvas, from_=0, to=59, width=2, font=('consolas', 20), fg='gray')
-middle_canvas.create_window(410, 100, window=m_minute_spin_box)
+middle_canvas.create_window(355, 100, window=m_minute_spin_box)
 m_minute_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, m_minute_spin_box))
 m_minute_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, m_minute_spin_box))
 
 # Time text
-middle_canvas.create_text(280, 100, text='Time:', font=('consolas', 20), fill='#e8ebea')
+middle_canvas.create_text(225, 100, text='Time:', font=('consolas', 20), fill='#e8ebea')
 # this hex colour is used because of the background picture of the canvas.
 
 # Date text
-middle_canvas.create_text(110, 100, text='Date:', font=('consolas', 20), fill='#e8ebea')
+middle_canvas.create_text(70, 100, text='Date:', font=('consolas', 20), fill='#e8ebea')
 
 # Calendar button for middle canvas
-m_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
+m_cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
 m_calendar_button = Button(middle_canvas, image=m_cal_icon, bg='light gray',
                            command=lambda: open_calendar(middle_canvas))
-cl_window2 = middle_canvas.create_window(180, 110, window=m_calendar_button)
+cl_window2 = middle_canvas.create_window(136, 100, window=m_calendar_button)
 m_calendar_button.bind('<Enter>', lambda event: calendar_button_hover_in(event, middle_canvas))
 m_calendar_button.bind('<Leave>', lambda event: calendar_button_hover_out(event, middle_canvas))
 
@@ -635,12 +711,24 @@ selected_date_label2 = Label(middle_canvas, text='You selected: ' + date_from_ca
 # Checkmark icon
 c_icon2 = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
 check_button2 = Button(middle_canvas, image=c_icon2, command=lambda: confirm_button_click(middle_canvas))
-middle_canvas.create_window(490, 90, window=check_button2)
+cf_window2 = middle_canvas.create_window(490, 90, window=check_button2)
+check_button2.bind('<Enter>', lambda event: confirm_button_hover_in(event, middle_canvas))
+check_button2.bind('<Leave>', lambda event: confirm_button_hover_out(event, middle_canvas))
 
 # Cancel icon
 cancel_icon2 = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
 cancel_button2 = Button(middle_canvas, image=cancel_icon2, command=lambda: cancel_button_click(middle_canvas))
-middle_canvas.create_window(490, 160, window=cancel_button2)
+cx_window2 = middle_canvas.create_window(490, 160, window=cancel_button2)
+cancel_button2.bind('<Enter>', lambda event: cancel_button_hover_in(event, middle_canvas))
+cancel_button2.bind('<Leave>', lambda event: cancel_button_hover_out(event, middle_canvas))
+
+# Get Time Now button
+time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
+time_now_button2 = Button(middle_canvas, image=time_now_icon2, command='')
+tn_window2 = middle_canvas.create_window(415, 100, window=time_now_button2)
+# TODO: Add hover binding event and command function
+
+
 
 # BOTTOM CANVAS-----------------------------------------------------------------------------------
 
@@ -671,6 +759,8 @@ sb_window = bottom_canvas.create_window(490, 160, window=save_button)
 save_button.bind('<Enter>', save_button_hover_in)
 save_button.bind('<Leave>', save_button_hover_out)
 
+
+
 # STATUS BAR--------------------------------------------------------------------------------
 global left_status_text, date_and_time_text, status_bar
 
@@ -684,6 +774,7 @@ status_bar_right.grid(row=3, column=1, sticky=E)
 
 # Thread for status bar time
 threading.Thread(target=status_bar_time_update).start()
+
 
 
 
