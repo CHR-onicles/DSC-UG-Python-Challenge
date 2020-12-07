@@ -43,4 +43,4 @@ as well as **2** spinboxes( to set the **hours** and **minutes**).
 
 
 ## DEMO:
-![AppDemo](images/bb_black.mp4)
+![AppDemo](images/timeTrackerApp.gif)
