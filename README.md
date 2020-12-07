@@ -32,15 +32,15 @@ as well as **2** spinboxes( to set the **hours** and **minutes**).
 
 
 ## SCREENSHOTS:
-<img src = "images/ss1.png" width = 500>
+<img src = "demos/ss1.png" width = 500>
 
-<img src = "images/ss2.png" width = 500>
+<img src = "demos/ss2.png" width = 500>
 
-<img src = "images/ss3.png" width = 500>
+<img src = "demos/ss3.png" width = 500>
 
 - Excel File where the information is saved to from the App:
 <img src = "images/ss_saved_info_excel.png" width = 600>
 
 
 ## DEMO:
-![AppDemo](images/timeTrackerApp.gif)
+![AppDemo](demos/timeTrackerApp.gif)
