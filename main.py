@@ -41,10 +41,8 @@ rate_text = 'Rate: 1hr = $5.00'
 # Payment calculation variable
 amount_to_be_paid = 0.0
 
-# Excel stuff
+# Excel stuff variable
 excel_first_time_open = 0
-
-
 # -----------------------------
 
 # DEFINING BINDING EVENT FUNCTIONS
@@ -58,13 +56,10 @@ def spin_box_hover_in(event, spin_box):
     """
     spin_box.config(fg='black')
 
-    # I couldn't find a simpler way to do the code below
-    if spin_box == root.winfo_children()[0].winfo_children()[0] \
-            or spin_box == root.winfo_children()[1].winfo_children()[0]:  # Simply if spin box in focus is the hour
+    if spin_box == top_hour_spin_box or spin_box == m_hour_spin_box:
         status_bar_left.config(text='Set the hour...', font=('consolas', 12, 'italic'))
 
-    elif spin_box == root.winfo_children()[0].winfo_children()[1] \
-            or spin_box == root.winfo_children()[1].winfo_children()[1]:  # Simply if spin box in focus is the minutes
+    elif spin_box == top_minute_spin_box or spin_box == m_minute_spin_box:
         status_bar_left.config(text='Set the minutes...', font=('consolas', 12, 'italic'))
 
 
@@ -180,7 +175,7 @@ def calendar_button_hover_in(event, canvas):
     """
 
     # Created 2 separate instances because of conflict between them when they both use the same resources.
-    if canvas == root.winfo_children()[0]:  # this is top canvas
+    if canvas == top_canvas:  # this is top canvas
         global cl_window, calendar_button, cal_icon
         canvas.delete(cl_window)
         cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((50, 50), Image.ANTIALIAS))
@@ -203,7 +198,7 @@ def calendar_button_hover_out(event, canvas):
     """
     Function to update the calendar button when it is hovered out of.
     """
-    if canvas == root.winfo_children()[0]:  # top canvas
+    if canvas == top_canvas:  # top canvas
         global cl_window, calendar_button, cal_icon
         canvas.delete(cl_window)
         cal_icon = ImageTk.PhotoImage(Image.open('images/cal2_icon.png').resize((45, 45), Image.ANTIALIAS))
@@ -226,7 +221,7 @@ def confirm_button_hover_in(event, canvas):
     """
     Function to update the confirm button when it is hovered on.
     """
-    if canvas == root.winfo_children()[0]:  # top canvas
+    if canvas == top_canvas:  # top canvas
         global c_icon, check_button, cf_window
         canvas.delete(cf_window)
         c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((65, 65), Image.ANTIALIAS))
@@ -248,7 +243,7 @@ def confirm_button_hover_out(event, canvas):
     """
     Function to update the confirm button when it is hovered out of.
     """
-    if canvas == root.winfo_children()[0]:  # top canvas
+    if canvas == top_canvas:  # top canvas
         global c_icon, check_button, cf_window
         canvas.delete(cf_window)
         c_icon = ImageTk.PhotoImage(Image.open('images/check_icon.png').resize((60, 60), Image.ANTIALIAS))
@@ -271,7 +266,7 @@ def cancel_button_hover_in(event, canvas):
     """
     Function to update the cancel button when it is hovered on.
     """
-    if canvas == root.winfo_children()[0]:  # top canvas
+    if canvas == top_canvas:
         global cancel_icon, cancel_button, cx_window
         canvas.delete(cx_window)
         cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((65, 65), Image.ANTIALIAS))
@@ -294,7 +289,7 @@ def cancel_button_hover_out(event, canvas):
     """
     Function to update the cancel button when it is hovered out of.
     """
-    if canvas == root.winfo_children()[0]:  # top canvas
+    if canvas == top_canvas:
         global cancel_icon, cancel_button, cx_window
         canvas.delete(cx_window)
         cancel_icon = ImageTk.PhotoImage(Image.open('images/remove_icon.jpg').resize((60, 60), Image.ANTIALIAS))
@@ -310,11 +305,59 @@ def cancel_button_hover_out(event, canvas):
         cx_window2 = canvas.create_window(490, 160, window=cancel_button2)
         cancel_button2.bind('<Enter>', lambda e: cancel_button_hover_in(e, canvas))
 
-    status_bar_left.config(text=rate_text)
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
+
+
+def time_now_button_hover_in(event, canvas):
+    """
+    Function to update time_now button when it is hovered on.
+    """
+    if canvas == top_canvas:
+        global time_now_icon, time_now_button, tn_window
+        canvas.delete(tn_window)
+        time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((50, 50), Image.ANTIALIAS))
+        time_now_button = Button(canvas, image=time_now_icon, command=lambda: get_current_date_time(canvas))
+        tn_window = canvas.create_window(415, 100, window=time_now_button)
+        time_now_button.bind('<Leave>', lambda e: time_now_button_hover_out(e, canvas))
+
+    else:  # middle canvas
+        global time_now_icon2, time_now_button2, tn_window2
+        canvas.delete(tn_window2)
+        time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((50, 50), Image.ANTIALIAS))
+        time_now_button2 = Button(canvas, image=time_now_icon2,
+                                  command=lambda: get_current_date_time(canvas))
+        tn_window2 = canvas.create_window(415, 100, window=time_now_button2)
+        time_now_button2.bind('<Leave>', lambda e: time_now_button_hover_out(e, canvas))
+
+    status_bar_left.config(text='Get current date and time...', font=('consolas', 12, 'italic'))
+
+
+def time_now_button_hover_out(event, canvas):
+    """
+    Function to update time now button when it is hovered out of.
+    """
+    if canvas == top_canvas:
+        global time_now_icon, time_now_button, tn_window
+        canvas.delete(tn_window)
+        time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
+        time_now_button = Button(canvas, image=time_now_icon, command=lambda: get_current_date_time(canvas))
+        tn_window = canvas.create_window(415, 100, window=time_now_button)
+        time_now_button.bind('<Enter>', lambda e: time_now_button_hover_in(e, canvas))
+
+    else:  # middle canvas
+        global time_now_icon2, time_now_button2, tn_window2
+        canvas.delete(tn_window2)
+        time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
+        time_now_button2 = Button(canvas, image=time_now_icon2,
+                                  command=lambda: get_current_date_time(canvas))
+        tn_window2 = canvas.create_window(415, 100, window=time_now_button2)
+        time_now_button2.bind('<Enter>', lambda e: time_now_button_hover_in(e, canvas))
+
+    status_bar_left.config(text=rate_text, font=('consolas', 12))
 
 
 
-# DEFINING COMMAND FUNCTIONS
+# DEFINING COMMAND FUNCTIONS--------------------------------------------------------
 
 def open_calendar(canvas):
     """
@@ -352,15 +395,36 @@ def open_calendar(canvas):
             if canvas == top_canvas:
                 date_from_calendar = cal.get_date()
 
-                # rearranging of date format to: YYYY/MM/DD
+                # rearranging of date format to: DD/MM/YY
                 temp = date_from_calendar.split('/')
+
+                # Prepending 0 to single digits
+                if len(temp[0]) == 1 and len(temp[1]) == 1:
+                    temp[0] = '0' + temp[0]
+                    temp[1] = '0' + temp[1]
+                elif len(temp[0]) == 1:
+                    temp[0] = '0' + temp[0]
+                elif len(temp[1]) == 1:
+                    temp[1] = '0' + temp[1]
+
                 temp2 = temp[1] + '/' + temp[0] + '/' + temp[2]
                 date_from_calendar = temp2
+
             elif canvas == middle_canvas:
                 date_from_calendar2 = cal.get_date()
 
-                # rearranging of date format to: YYYY/MM/DD
+                # rearranging of date format to: DD/MM/YY
                 temp = date_from_calendar2.split('/')
+
+                # Prepending 0 to single digits
+                if len(temp[0]) == 1 and len(temp[1]) == 1:
+                    temp[0] = '0' + temp[0]
+                    temp[1] = '0' + temp[1]
+                elif len(temp[0]) == 1:
+                    temp[0] = '0' + temp[0]
+                elif len(temp[1]) == 1:
+                    temp[1] = '0' + temp[1]
+
                 temp2 = temp[1] + '/' + temp[0] + '/' + temp[2]
                 date_from_calendar2 = temp2
 
@@ -407,18 +471,19 @@ def confirm_button_click(canvas):
     :param canvas: canvas object to know which canvas called it and attribute specific
                     configurations to it or some other global variables.
     """
-    global date_window, date_window2
+    global date_window, date_window2, selected_date_label, s_time, selected_date_label2, s_time2
 
     if canvas == top_canvas:
-        global selected_date_label, s_time
 
         if len(top_hour_spin_box.get()) > 2 or len(top_minute_spin_box.get()) > 2:
             messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
 
         else:
+            # Prepend 0 if its a single digit
+            # Decided to use this and not len() because this helps filter out non-digit input from user :)
             if (0 <= int(top_hour_spin_box.get()) <= 9) and (0 <= int(top_minute_spin_box.get()) <= 9):
                 s_time = '0' + top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-            elif 0 <= int(top_minute_spin_box.get()) <= 9:  # append 0 if single number
+            elif 0 <= int(top_minute_spin_box.get()) <= 9:
                 s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
             elif 0 <= int(top_hour_spin_box.get()) <= 9:
                 s_time = '0' + top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
@@ -428,7 +493,6 @@ def confirm_button_click(canvas):
             date_window = canvas.create_window(225, 170, window=selected_date_label)
 
     elif canvas == middle_canvas:
-        global selected_date_label2, s_time2
 
         if len(m_hour_spin_box.get()) > 2 or len(m_minute_spin_box.get()) > 2:
             messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
@@ -453,11 +517,32 @@ def cancel_button_click(canvas):
     :param canvas: canvas object to know which canvas called it and update specific labels.
     """
     if canvas == middle_canvas:
-        global selected_date_label2
         canvas.delete(date_window2)
-    elif canvas == top_canvas:
-        global selected_date_label
+
+    else:  # top canvas
         canvas.delete(date_window)
+
+
+def get_current_date_time(canvas):
+    """
+    Command function to get the system's current date and time.
+
+    :param canvas: canvas object to know which canvas called it and update its labels.
+    """
+    global s_time, selected_date_label, date_window, date_window2, s_time2, selected_date_label2
+    global date_from_calendar, date_from_calendar2
+
+    if canvas == top_canvas:
+        date_from_calendar = dt.now().strftime('%d/%m/%y')
+        s_time = dt.now().strftime('%H:%M')
+        selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
+        date_window = canvas.create_window(225, 170, window=selected_date_label)
+
+    else:  # middle canvas
+        date_from_calendar2 = dt.now().strftime('%d/%m/%y')
+        s_time2 = dt.now().strftime('%H:%M')
+        selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
+        date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
 
 
 def payment_calculation():
@@ -468,16 +553,15 @@ def payment_calculation():
     """
     # Do nothing with dates for now since both dates(date started and date completed) will be the same.
 
-    global amount_label, calc_payment_button, amount_to_be_paid, invalid_label
+    global amount_label, calc_payment_button, amount_to_be_paid, s_time, s_time2
     amount_label = bottom_canvas.create_text(250, 150, text='')
-    invalid_label = bottom_canvas.create_text(250, 150, text='')
 
     # Perform operations on hours and minutes only
     # Grabbing hours and minutes
-    hour_completed = int(m_hour_spin_box.get())
-    minutes_completed = int(m_minute_spin_box.get())
-    hour_started = int(top_hour_spin_box.get())
-    minutes_started = int(top_minute_spin_box.get())
+    hour_completed = int(s_time2[0:2])
+    minutes_completed = int(s_time2[3:])
+    hour_started = int(s_time[0:2])
+    minutes_started = int(s_time[3:])
 
     hours_elapsed = hour_completed - hour_started
     minutes_elapsed = minutes_completed - minutes_started
@@ -501,7 +585,6 @@ def reset_values():
     """
     global calc_payment_button
     bottom_canvas.delete(amount_label)
-    bottom_canvas.delete(invalid_label)
     middle_canvas.delete(date_window2)
     top_canvas.delete(date_window)
     calc_payment_button.config(state=NORMAL)
@@ -546,7 +629,7 @@ def save_to_excel():
         workbook.close()
 
         # Message box for successful entry
-        messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to excel file!')
+        messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to NEW excel file!')
 
     def edit_existing_file():
         """
@@ -557,7 +640,7 @@ def save_to_excel():
 
         found_available_cell = False
         row_num = 0
-        for row in sheet.iter_rows(min_row=1, max_row=100, min_col=1, max_col=6):
+        for row in sheet.iter_rows(min_row=1, max_row=200, min_col=1, max_col=6):
             row_num += 1
             for count, cell in enumerate(row):
 
@@ -579,7 +662,7 @@ def save_to_excel():
         # Save and close excel file
         workbook.save('payment_history.xlsx')
         workbook.close()
-        messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to excel file!')
+        messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to EXISTING excel file!')
 
     # Main Excel Logic
     if excel_first_time_open == 0:  # Save button has not been clicked already
@@ -602,7 +685,9 @@ def save_to_excel():
     excel_first_time_open += 1
 
 
-# TOP CANVAS------------------------------------------------------------------------------------
+
+
+# TOP CANVAS---------------------------------------------------------------------------------------
 
 top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 top_canvas.grid(row=0, column=0, sticky=W + E, columnspan=2)
@@ -659,13 +744,14 @@ cancel_button.bind('<Leave>', lambda event: cancel_button_hover_out(event, top_c
 
 # Get Time Now button
 time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
-time_now_button = Button(top_canvas, image=time_now_icon, command='')
+time_now_button = Button(top_canvas, image=time_now_icon, command=lambda: get_current_date_time(top_canvas))
 tn_window = top_canvas.create_window(415, 100, window=time_now_button)
-# TODO: Add hover binding event and command function
+time_now_button.bind('<Enter>', lambda event: time_now_button_hover_in(event, top_canvas))
+time_now_button.bind('<Leave>', lambda event: time_now_button_hover_out(event, top_canvas))
 
 
 
-# MIDDLE CANVAS-------------------------------------------------------------------------------------
+# MIDDLE CANVAS---------------------------------------------------------------------------------------
 
 middle_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W + E)
@@ -724,10 +810,10 @@ cancel_button2.bind('<Leave>', lambda event: cancel_button_hover_out(event, midd
 
 # Get Time Now button
 time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
-time_now_button2 = Button(middle_canvas, image=time_now_icon2, command='')
+time_now_button2 = Button(middle_canvas, image=time_now_icon2, command=lambda: get_current_date_time(middle_canvas))
 tn_window2 = middle_canvas.create_window(415, 100, window=time_now_button2)
-# TODO: Add hover binding event and command function
-
+time_now_button2.bind('<Enter>', lambda event: time_now_button_hover_in(event, middle_canvas))
+time_now_button2.bind('<Leave>', lambda event: time_now_button_hover_out(event, middle_canvas))
 
 
 # BOTTOM CANVAS-----------------------------------------------------------------------------------
@@ -736,7 +822,7 @@ bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W + E)
 img3 = ImageTk.PhotoImage(Image.open('images/money_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
-bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25), )
+bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25))
 
 # Calculate Payment Button
 calc_payment_button = Button(bottom_canvas, text='Calculate Payment', font=('consolas', 20),
@@ -777,10 +863,11 @@ threading.Thread(target=status_bar_time_update).start()
 
 
 
-
+# MAIN--------------------
 if __name__ == '__main__':
     root.mainloop()
 
-    # TODO: 3. Maybe change button and label locations for top and middle canvas.
-    #       4. Add 'get current time' button. - HIGH PRIORITY
-    #       5. Update left section of status bar when mouse pointer hovers on checkmark and cancel buttons.
+    # TODO:
+    #       4. Take Screenshots and possible video recordings to update README.
+    #       5. Finish README. - HIGH PRIORITY
+
