@@ -12,13 +12,13 @@ the time spent teaching.
 ## About App:
 - ### General:
     This is a GUI-based app using tkinter with Python. It contains widgets that are <b>statically</b>
-    placed on 3 canvases(`top_canvas`, `middle_canvas` and `bottom_canvas`) in the app, therefore trying
-    to resize the app would not work.
+    placed on 3 canvases(`top_canvas`, `middle_canvas` and `bottom_canvas`) in the app, therefore resizing 
+    the app is disabled.
 
 - ### Status Bar:
     The App contains a status bar which is divided into **2 sections**: The **left
     section** which gives information on a button if the mouse pointer hovers over it, and the **right section** which 
-    constantly tells the system time using a threaded function.
+    constantly tells the **system time** using a threaded function.
 
 - ### Buttons and Spinboxes:
     The App contains **12** total **clickable** and **animated** buttons which have various functions
@@ -31,7 +31,12 @@ the time spent teaching.
     Both buttons open a small calendar window which defaults to the current date, but the user can 
     select whichever date he pleases - past or future. After which, the user is required to click on the **Submit Button**.
   
+
+- *Submit Button*:
+    
+    This button is located in the calendar window when the calendar is opened, and it saves the date chosen by the user.
   
+
 - *Checkmark Buttons*:
   
   Both buttons confirm the user's selection of time and date from the **spinboxes** and **calendar** 
@@ -78,14 +83,10 @@ the time spent teaching.
     After the button is clicked for the first time, the next clicks don't open the file dialog box, but rather saves 
     the information to the previously used Excel file for convenience.
   
-
-- *Submit Button*:
-    
-    This button is located in the calendar window when the calendar is opened, and it saves the date chosen by the user.
   
 
 ## PS:
 This is my first GUI APP especially with Tkinter, so some of my methods and overall design may be inefficient.
-Bugs and minor glitches may also be encountered while using the App.
+The code has been heavily commented and formatted for easy comprehension. Bugs and minor glitches may also be encountered while using the App.
 
 **Contact**: tpandivine48@gmail.com, CHR-onicles©
