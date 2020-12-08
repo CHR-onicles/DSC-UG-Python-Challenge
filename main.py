@@ -45,6 +45,8 @@ amount_to_be_paid = 0.0
 
 # Excel stuff variable
 excel_first_time_open = 0
+current_dir = os.getcwd()
+
 # -----------------------------
 
 # DEFINING BINDING EVENT FUNCTIONS
@@ -695,6 +697,9 @@ def save_to_excel():
                 break
     else:
         edit_existing_file()
+
+    # Change directory back
+    os.chdir(current_dir)
 
     excel_first_time_open += 1
 
