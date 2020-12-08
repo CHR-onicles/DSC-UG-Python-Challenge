@@ -45,7 +45,8 @@ amount_to_be_paid = 0.0
 
 # Excel stuff variable
 excel_first_time_open = 0
-current_dir = os.getcwd()
+alpha_current_dir = os.getcwd()
+dir_location = ''
 
 # -----------------------------
 
@@ -119,7 +120,7 @@ def save_button_hover_in(event):
     """
     global save_icon, save_button, sb_window
     bottom_canvas.delete(sb_window)
-    save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((70, 65), Image.ANTIALIAS))
+    save_icon = ImageTk.PhotoImage(Image.open('images/save.png').resize((70, 65), Image.ANTIALIAS))
     save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
     sb_window = bottom_canvas.create_window(490, 160, window=save_button)
     save_button.bind('<Leave>', save_button_hover_out)
@@ -134,8 +135,8 @@ def save_button_hover_out(event):
     """
     global save_icon, save_button, sb_window
     bottom_canvas.delete(sb_window)
-    save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 60), Image.ANTIALIAS))
-    save_button = Button(bottom_canvas, image=save_icon, bg='SystemButtonFace', command=save_to_excel)
+    save_icon = ImageTk.PhotoImage(Image.open('images/save.png').resize((65, 60), Image.ANTIALIAS))
+    save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
     sb_window = bottom_canvas.create_window(490, 160, window=save_button)
     save_button.bind('<Enter>', save_button_hover_in)
 
@@ -479,41 +480,74 @@ def confirm_button_click(canvas):
     """
     global date_window, date_window2, selected_date_label, s_time, selected_date_label2, s_time2
 
+    def remove_user_prepended_zeros(var):
+        """
+        Small Helper function to remove user prepended zeros to time because app will take there of that.
+
+        :param var: spin box value that is passed to function.
+        :return: returns new var without the prepended zero.
+        """
+        if len(var.get()) == 2 and var.get()[0] == '0':
+            var.set(var.get()[1])
+            return var.get()
+        else:
+            return var.get()  # do nothing
+
+    # Putting all spinbox values in local variables because
+    # its easier to perform operations on those variables.
+    top_hour = StringVar()
+    top_hour.set(top_hour_spin_box.get())
+    top_minute = StringVar()
+    top_minute.set(top_minute_spin_box.get())
+    m_hour = StringVar()
+    m_hour.set(m_hour_spin_box.get())
+    m_minute = StringVar()
+    m_minute.set(m_minute_spin_box.get())
+
+
+
+    # Check for user prepended zeros and remove them with function
+    top_hour.set(remove_user_prepended_zeros(top_hour))
+    top_minute.set(remove_user_prepended_zeros(top_minute))
+    m_hour.set(remove_user_prepended_zeros(m_hour))
+    m_minute.set(remove_user_prepended_zeros(m_minute))
+
+
     if canvas == top_canvas:
 
         # If user types in more than 2 numbers, generate error message
-        if len(top_hour_spin_box.get()) > 2 or len(top_minute_spin_box.get()) > 2:
+        if len(top_hour.get()) > 2 or len(top_minute.get()) > 2:
             messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
 
         else:
             # Prepend 0 if its a single digit
             # Decided to use this and not len() because this helps filter out non-digit input from user :)
-            if (0 <= int(top_hour_spin_box.get()) <= 9) and (0 <= int(top_minute_spin_box.get()) <= 9):
-                s_time = '0' + top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-            elif 0 <= int(top_minute_spin_box.get()) <= 9:
-                s_time = top_hour_spin_box.get() + ':' + '0' + top_minute_spin_box.get()
-            elif 0 <= int(top_hour_spin_box.get()) <= 9:
-                s_time = '0' + top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+            if (0 <= int(top_hour.get()) <= 9) and (0 <= int(top_minute.get()) <= 9):
+                s_time = '0' + top_hour.get() + ':' + '0' + top_minute.get()
+            elif 0 <= int(top_minute.get()) <= 9:
+                s_time = top_hour.get() + ':' + '0' + top_minute.get()
+            elif 0 <= int(top_hour.get()) <= 9:
+                s_time = '0' + top_hour.get() + ':' + top_minute.get()
             else:
-                s_time = top_hour_spin_box.get() + ':' + top_minute_spin_box.get()
+                s_time = top_hour.get() + ':' + top_minute.get()
             selected_date_label.config(text='You selected: ' + date_from_calendar + ' ' + s_time)
             date_window = canvas.create_window(225, 170, window=selected_date_label)
 
     elif canvas == middle_canvas:
 
         # If user types in more than 2 numbers, generate error message
-        if len(m_hour_spin_box.get()) > 2 or len(m_minute_spin_box.get()) > 2:
+        if len(m_hour.get()) > 2 or len(m_minute.get()) > 2:
             messagebox.showerror(title='INVALID INPUT', message='TIME ENTERED IS INVALID')
 
         else:
-            if (0 <= int(m_minute_spin_box.get()) <= 9) and (0 <= int(m_hour_spin_box.get()) <= 9):
-                s_time2 = '0' + m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-            elif 0 <= int(m_minute_spin_box.get()) <= 9:
-                s_time2 = m_hour_spin_box.get() + ':' + '0' + m_minute_spin_box.get()
-            elif 0 <= int(m_hour_spin_box.get()) <= 9:
-                s_time2 = '0' + m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+            if (0 <= int(m_minute.get()) <= 9) and (0 <= int(m_hour.get()) <= 9):
+                s_time2 = '0' + m_hour.get() + ':' + '0' + m_minute.get()
+            elif 0 <= int(m_minute.get()) <= 9:
+                s_time2 = m_hour.get() + ':' + '0' + m_minute.get()
+            elif 0 <= int(m_hour.get()) <= 9:
+                s_time2 = '0' + m_hour.get() + ':' + m_minute.get()
             else:
-                s_time2 = m_hour_spin_box.get() + ':' + m_minute_spin_box.get()
+                s_time2 = m_hour.get() + ':' + m_minute.get()
             selected_date_label2.config(text='You selected: ' + date_from_calendar2 + ' ' + s_time2)
             date_window2 = canvas.create_window(225, 170, window=selected_date_label2)
 
@@ -609,7 +643,8 @@ def save_to_excel():
     Function to save date/time started and completed and payment calculated
     to an excel file.
     """
-    global excel_first_time_open, amount_to_be_paid
+    global excel_first_time_open, amount_to_be_paid, dir_location
+    program_dir = alpha_current_dir
 
     def create_new_file():
         """
@@ -641,6 +676,9 @@ def save_to_excel():
         # Save excel file and close it
         workbook.save('payment_history.xlsx')
         workbook.close()
+
+        # Change back to program's directory
+        os.chdir(program_dir)
 
         # Message box for successful entry to NEW file
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to NEW excel file!')
@@ -677,6 +715,9 @@ def save_to_excel():
         workbook.save('payment_history.xlsx')
         workbook.close()
 
+        # Change back to program's directory
+        os.chdir(program_dir)
+
         # Message box for successful entry to EXISTING file
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to EXISTING excel file!')
 
@@ -696,10 +737,9 @@ def save_to_excel():
                 edit_existing_file()
                 break
     else:
+        # Change location to the user-chosen one
+        os.chdir(dir_location)
         edit_existing_file()
-
-    # Change directory back
-    os.chdir(current_dir)
 
     excel_first_time_open += 1
 
@@ -859,7 +899,7 @@ reset_button.bind('<Enter>', reset_button_hover_in)
 reset_button.bind('<Leave>', reset_button_hover_out)
 
 # Save to Excel Button
-save_icon = ImageTk.PhotoImage(Image.open('images/save3.png').resize((65, 60), Image.ANTIALIAS))
+save_icon = ImageTk.PhotoImage(Image.open('images/save.png').resize((65, 60), Image.ANTIALIAS))
 save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
 sb_window = bottom_canvas.create_window(490, 160, window=save_button)
 save_button.bind('<Enter>', save_button_hover_in)
