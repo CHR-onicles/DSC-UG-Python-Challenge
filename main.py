@@ -47,7 +47,7 @@ amount_to_be_paid = 0.0
 excel_first_time_open = 0
 alpha_current_dir = os.getcwd()
 dir_location = ''
-
+# TODO: Put coordinates of buttons in global variables for easy update of button locations.
 # -----------------------------
 
 # DEFINING BINDING EVENT FUNCTIONS
@@ -452,7 +452,7 @@ def open_calendar(canvas):
         submit_button.bind('<Leave>', submit_button_hover_out)
         first_time_open = True
 
-    if first_time_open == False:  # Opened calendar window for the first time
+    if first_time_open is False:  # Opened calendar window for the first time
         create_calendar_window()
 
     else:
@@ -616,7 +616,7 @@ def payment_calculation():
     total_minutes_elapsed = minutes_elapsed + hours_to_mins
     amount_to_be_paid = round(float(total_minutes_elapsed * 1 / 12), 2)
 
-    # hmmm...Might generate false positive errors since user can choose different dates
+    # hmm...Might generate false positive errors since user can choose different dates
     # TODO: Do the TODO just before this one
     if total_minutes_elapsed < 0:
         messagebox.showerror(title='INVALID ARGUMENT', message='INVALID INFORMATION ENTERED!')
@@ -708,7 +708,7 @@ def save_to_excel():
                     break
                 elif cell.value is not None:  # if any cell contains information, break
                     break
-            if found_available_cell == True:
+            if found_available_cell is True:
                 break
 
         # Save and close excel file
