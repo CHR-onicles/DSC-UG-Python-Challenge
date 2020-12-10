@@ -39,7 +39,27 @@ root.resizable(False, False)
 root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar.
 
 
-# GLOBAL VARIABLES------------
+# GLOBAL VARIABLES-----------------------------------
+
+# Widget Position Coordinates:
+
+# Top Canvas Stuff
+top_text_x, top_text_y = 270, 30
+
+
+
+# Middle Canvas Stuff
+middle_text_x, middle_text_y = 280, 26
+
+
+
+# Bottom Canvas Stuff
+bottom_text_x, bottom_text_y = 280, 30
+cbutton_x, cbutton_y = 275, 100
+rbutton_x, rbutton_y = 60, 160
+sbutton_x, sbutton_y = 490, 160
+
+
 
 # Calendar stuff
 cal_window = None
@@ -58,8 +78,8 @@ total_hours_spent = 0.0
 excel_first_time_open = 0
 alpha_current_dir = os.getcwd()
 dir_location = ''
-# TODO: Put coordinates of buttons in global variables for easy update of button locations.
-# -----------------------------
+# ------------------------------------------------------
+
 
 # DEFINING BINDING EVENT FUNCTIONS
 
@@ -788,7 +808,7 @@ top_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 top_canvas.grid(row=0, column=0, sticky=W + E, columnspan=2)
 img1 = ImageTk.PhotoImage(Image.open('images/clock_dark.jfif'), Image.ANTIALIAS)
 top_canvas.create_image(0, 0, image=img1, anchor=NW)
-top_canvas.create_text(270, 30, text='Date/Time Started', font=('android 7', 25))
+top_canvas.create_text(top_text_x, top_text_y, text='Date/Time Started', font=('android 7', 25))
 
 # Top Canvas Hour Spin Box
 top_hour_spin_box = Spinbox(top_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
@@ -852,7 +872,8 @@ middle_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 middle_canvas.grid(row=1, column=0, columnspan=2, sticky=W + E)
 img2 = ImageTk.PhotoImage(Image.open('images/time_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 middle_canvas.create_image(0, 0, image=img2, anchor=NW)
-middle_canvas.create_text(280, 26, text='Date/Time Completed', font=('android 7', 25), fill='#e8ebea')
+middle_canvas.create_text(middle_text_x, middle_text_y, text='Date/Time Completed',
+                          font=('android 7', 25), fill='#e8ebea')
 
 # Middle Canvas Hour Spin Box
 m_hour_spin_box = Spinbox(middle_canvas, from_=0, to=23, width=2, font=('consolas', 20), fg='gray')
@@ -918,26 +939,26 @@ bottom_canvas = Canvas(root, width=ROOT_WIDTH, height=200, borderwidth=0)
 bottom_canvas.grid(row=2, column=0, columnspan=2, sticky=W + E)
 img3 = ImageTk.PhotoImage(Image.open('images/money_dark.jfif').resize((600, 400)), Image.ANTIALIAS)
 bottom_canvas.create_image(0, 0, image=img3, anchor=NW)
-bottom_canvas.create_text(280, 30, text='Payment', font=('android 7', 25), fill='#e8ebea')
+bottom_canvas.create_text(bottom_text_x, bottom_text_y, text='Payment', font=('android 7', 25), fill='#e8ebea')
 
 # Calculate Payment Button
 calc_payment_button = Button(bottom_canvas, text='Calculate Payment', font=('consolas', 20),
                              command=payment_calculation)
-bottom_canvas.create_window(275, 100, window=calc_payment_button)
+bottom_canvas.create_window(cbutton_x, cbutton_y, window=calc_payment_button)
 calc_payment_button.bind('<Enter>', calculate_payment_button_hover_in)
 calc_payment_button.bind('<Leave>', calculate_payment_button_hover_out)
 
 # Reset Button
 reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((60, 60), Image.ANTIALIAS))
 reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
-r_window = bottom_canvas.create_window(60, 160, window=reset_button)
+r_window = bottom_canvas.create_window(rbutton_x, rbutton_y, window=reset_button)
 reset_button.bind('<Enter>', reset_button_hover_in)
 reset_button.bind('<Leave>', reset_button_hover_out)
 
 # Save to Excel Button
 save_icon = ImageTk.PhotoImage(Image.open('images/save.png').resize((65, 60), Image.ANTIALIAS))
 save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
-sb_window = bottom_canvas.create_window(490, 160, window=save_button)
+sb_window = bottom_canvas.create_window(sbutton_x, sbutton_y, window=save_button)
 save_button.bind('<Enter>', save_button_hover_in)
 save_button.bind('<Leave>', save_button_hover_out)
 
