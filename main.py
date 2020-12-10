@@ -20,9 +20,20 @@ import threading
 root = Tk()
 root.title('TimeTracker')
 root.iconbitmap('images/cat.ico')
+
+SCREEN_HEIGHT = root.winfo_screenheight()
+SCREEN_WIDTH = root.winfo_screenwidth()
+
+# print(SCREEN_HEIGHT, SCREEN_WIDTH)  # For debugging
 ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
-root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
+
+# x and y coordinates to center app on screen
+x_pos = (SCREEN_WIDTH/2) - (ROOT_WIDTH/2)
+y_pos = (SCREEN_HEIGHT/2) - (ROOT_HEIGHT/2)
+
+root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}+{int(x_pos)}+{int(y_pos)}')
+
 # Preventing user from increasing or reducing app size as most widgets are statically placed!
 root.resizable(False, False)
 root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar.
@@ -388,7 +399,9 @@ def open_calendar(canvas):
         cal_window = Toplevel()
         cal_window.title('Calendar')
         cal_window.iconbitmap('images/cat.ico')
-        cal_window.geometry('250x270')
+
+        # To keep the calendar window within the app screen (specifically top left of app)
+        cal_window.geometry(f'250x270+{int(x_pos)}+{int(y_pos)}')
         cal_window.resizable(False, False)
         cal_window.configure(bg='#5fc29e')
 
@@ -595,7 +608,7 @@ def payment_calculation():
     # Do nothing with dates for now since both dates(date started and date completed) will be the same.
     # NB: If User selects different dates, app only checks the time regardless.
     # Hopefully no one enters different dates and get some crazy output :)
-    # Hmmm...naa... TODO: add check for this later
+    # Hmmm...naa... TODO: make sure User enters same date twice or only display one calendar button for QoL
 
     global amount_label, calc_payment_button, amount_to_be_paid, s_time, s_time2, total_hours_spent
     amount_label = bottom_canvas.create_text(250, 150, text='')
