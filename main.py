@@ -646,6 +646,19 @@ def save_to_excel():
     global excel_first_time_open, amount_to_be_paid, dir_location, total_hours_spent
     program_dir = alpha_current_dir
 
+
+    def check_total_hours_spent():
+        """
+        Small Helper function to check if the total hours spent is
+         and bring up an error box.
+        """
+        if total_hours_spent < 0:
+            messagebox.showerror(title='INVALID ARGUMENT', message='INVALID INFORMATION ENTERED!')
+            return False
+        else:
+            return True
+
+
     def create_new_file():
         """
         Function to create new excel file and input information from app.
@@ -724,25 +737,32 @@ def save_to_excel():
         # Message box for successful entry to EXISTING file
         messagebox.showinfo(title='Save To Excel File', message='Information saved successfully to EXISTING excel file!')
 
+
     # Main Excel Logic
     if excel_first_time_open == 0:  # Save button has not been clicked already
-        dir_location = askdirectory(initialdir='.\\', title='Select Directory To Save To')
+        if check_total_hours_spent() is True:
+            dir_location = askdirectory(initialdir='.\\', title='Select Directory To Save To')
 
-        # Change location to the user-chosen one
-        os.chdir(dir_location)
+            # Change location to the user-chosen one
+            os.chdir(dir_location)
 
-        # Search for already existing file
-        for item in os.listdir():
-            if item != 'payment_history.xlsx' and item == os.listdir()[-1]:
-                create_new_file()
+            # Search for already existing file
+            for item in os.listdir():
+                if item != 'payment_history.xlsx' and item == os.listdir()[-1]:
+                    create_new_file()
 
-            elif item == 'payment_history.xlsx':
-                edit_existing_file()
-                break
+                elif item == 'payment_history.xlsx':
+                    edit_existing_file()
+                    break
+        else:
+            pass  # Show error box and do nothing
     else:
-        # Change location to the user-chosen one
-        os.chdir(dir_location)
-        edit_existing_file()
+        if check_total_hours_spent() is True:
+            # Change location to the user-chosen one
+            os.chdir(dir_location)
+            edit_existing_file()
+        else:
+            pass  # Show error box and do nothing
 
     excel_first_time_open += 1
 
