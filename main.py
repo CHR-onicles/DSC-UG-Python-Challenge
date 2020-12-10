@@ -24,8 +24,7 @@ ROOT_WIDTH = 550
 ROOT_HEIGHT = 640
 root.geometry(f'{ROOT_WIDTH}x{ROOT_HEIGHT}')
 # Preventing user from increasing or reducing app size as most widgets are statically placed!
-root.minsize(ROOT_WIDTH, ROOT_HEIGHT)
-root.maxsize(ROOT_WIDTH, ROOT_HEIGHT)
+root.resizable(False, False)
 root.configure(bg='#5fc29e')  # turquoise-ish colour used in status bar and calendar.
 
 
@@ -42,6 +41,7 @@ rate_text = 'Rate: 1hr = $5.00'
 
 # Payment calculation variable
 amount_to_be_paid = 0.0
+total_hours_spent = 0.0
 
 # Excel stuff variable
 excel_first_time_open = 0
@@ -389,8 +389,7 @@ def open_calendar(canvas):
         cal_window.title('Calendar')
         cal_window.iconbitmap('images/cat.ico')
         cal_window.geometry('250x270')
-        cal_window.maxsize(250, 270)
-        cal_window.minsize(250, 270)
+        cal_window.resizable(False, False)
         cal_window.configure(bg='#5fc29e')
 
         def get_date():
@@ -598,7 +597,7 @@ def payment_calculation():
     # Hopefully no one enters different dates and get some crazy output :)
     # Hmmm...naa... TODO: add check for this later
 
-    global amount_label, calc_payment_button, amount_to_be_paid, s_time, s_time2
+    global amount_label, calc_payment_button, amount_to_be_paid, s_time, s_time2, total_hours_spent
     amount_label = bottom_canvas.create_text(250, 150, text='')
 
     # Perform operations on hours and minutes only
@@ -614,6 +613,7 @@ def payment_calculation():
     # Convert everything to minutes and perform calculations based on that
     hours_to_mins = hours_elapsed * 60
     total_minutes_elapsed = minutes_elapsed + hours_to_mins
+    total_hours_spent = round(total_minutes_elapsed / 60, 2)
     amount_to_be_paid = round(float(total_minutes_elapsed * 1 / 12), 2)
 
     # hmm...Might generate false positive errors since user can choose different dates
@@ -643,7 +643,7 @@ def save_to_excel():
     Function to save date/time started and completed and payment calculated
     to an excel file.
     """
-    global excel_first_time_open, amount_to_be_paid, dir_location
+    global excel_first_time_open, amount_to_be_paid, dir_location, total_hours_spent
     program_dir = alpha_current_dir
 
     def create_new_file():
@@ -658,11 +658,12 @@ def save_to_excel():
         sheet['B1'] = 'Time Started'
         sheet['C1'] = 'Date Completed'
         sheet['D1'] = 'Time Completed'
-        sheet['E1'] = 'Calculated Payment'
-        sheet['F1'] = 'Time Info was Saved'
+        sheet['E1'] = 'Total Hours Spent'
+        sheet['F1'] = 'Calculated Payment'
+        sheet['G1'] = 'Time Info was Saved'
 
         # Increase width for better view
-        for cols in ['A', 'B', 'C', 'D', 'E', 'F']:
+        for cols in ['A', 'B', 'C', 'D', 'E', 'F', 'G']:
             sheet.column_dimensions[cols].width = 20
 
         # This is the first time so we can write specifically to certain cells
@@ -670,8 +671,9 @@ def save_to_excel():
         sheet['B2'] = s_time
         sheet['C2'] = date_from_calendar2
         sheet['D2'] = s_time2
-        sheet['E2'] = '$' + str(amount_to_be_paid)
-        sheet['F2'] = dt.now().strftime('%d/%m/%Y, %H:%M:%S')
+        sheet['E2'] = total_hours_spent
+        sheet['F2'] = '$' + str(amount_to_be_paid)
+        sheet['G2'] = dt.now().strftime('%d/%m/%Y, %H:%M:%S')
 
         # Save excel file and close it
         workbook.save('payment_history.xlsx')
@@ -702,8 +704,9 @@ def save_to_excel():
                     sheet.cell(row=row_num, column=2).value = s_time
                     sheet.cell(row=row_num, column=3).value = date_from_calendar2
                     sheet.cell(row=row_num, column=4).value = s_time2
-                    sheet.cell(row=row_num, column=5).value = '$' + str(amount_to_be_paid)
-                    sheet.cell(row=row_num, column=6).value = dt.now().strftime('%d/%m/%Y, %H:%M:%S')
+                    sheet.cell(row=row_num, column=5).value = total_hours_spent
+                    sheet.cell(row=row_num, column=6).value = '$' + str(amount_to_be_paid)
+                    sheet.cell(row=row_num, column=7).value = dt.now().strftime('%d/%m/%Y, %H:%M:%S')
                     found_available_cell = True
                     break
                 elif cell.value is not None:  # if any cell contains information, break
