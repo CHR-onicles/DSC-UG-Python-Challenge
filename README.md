@@ -1,7 +1,7 @@
 # DSC UG PYTHON CHALLENGE
 
 App to calculate the amount a person earns per
-the time spent teaching.
+the time spent teaching. ([*See Challenge here*](https://cutt.ly/ZhUSELu))
 
 ## REQUIREMENTS:
 - Pip install [Openpyxl](https://pypi.org/project/openpyxl/)
