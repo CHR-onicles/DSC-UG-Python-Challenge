@@ -54,8 +54,7 @@ t_time_text_x, t_time_text_y = 225, 100
 t_cal_button_x, t_cal_button_y = 136, 100
 t_cf_button_x, t_cf_button_y = 490, 90
 t_cx_button_x, t_cx_button_y = 490, 160
-
-
+t_time_now_button_x, t_time_now_button_y = 415, 100
 
 # Middle Canvas Stuff
 m_text_x, m_text_y = 280, 26
@@ -64,15 +63,14 @@ m_time_text_x, m_time_text_y = 225, 100
 m_cal_button_x, m_cal_button_y = 136, 100
 m_cf_button_x, m_cf_button_y = 490, 90
 m_cx_button_x, m_cx_button_y = 490, 160
-
-
+m_time_now_button_x, m_time_now_button_y = 415, 100
 
 # Bottom Canvas Stuff
 bottom_text_x, bottom_text_y = 280, 30
 cbutton_x, cbutton_y = 275, 100
 rbutton_x, rbutton_y = 60, 160
 sbutton_x, sbutton_y = 490, 160
-
+amt_lbl_x, amt_lbl_y = 270, 150
 
 
 # Calendar stuff
@@ -91,7 +89,7 @@ total_hours_spent = 0.0
 excel_first_time_open = 0
 alpha_current_dir = os.getcwd()
 dir_location = ''
-# ------------------------------------------------------
+# -------------------------------------------------------------------------------------
 
 
 # DEFINING BINDING EVENT FUNCTIONS
@@ -166,7 +164,7 @@ def save_button_hover_in(event):
     bottom_canvas.delete(sb_window)
     save_icon = ImageTk.PhotoImage(Image.open('images/save.png').resize((70, 65), Image.ANTIALIAS))
     save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
-    sb_window = bottom_canvas.create_window(490, 160, window=save_button)
+    sb_window = bottom_canvas.create_window(sbutton_x, sbutton_y, window=save_button)
     save_button.bind('<Leave>', save_button_hover_out)
 
     # Update status bar
@@ -181,7 +179,7 @@ def save_button_hover_out(event):
     bottom_canvas.delete(sb_window)
     save_icon = ImageTk.PhotoImage(Image.open('images/save.png').resize((65, 60), Image.ANTIALIAS))
     save_button = Button(bottom_canvas, image=save_icon, command=save_to_excel)
-    sb_window = bottom_canvas.create_window(490, 160, window=save_button)
+    sb_window = bottom_canvas.create_window(sbutton_x, sbutton_y, window=save_button)
     save_button.bind('<Enter>', save_button_hover_in)
 
     # Update status bar again
@@ -196,7 +194,7 @@ def reset_button_hover_in(event):
     bottom_canvas.delete(r_window)
     reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((65, 65), Image.ANTIALIAS))
     reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
-    r_window = bottom_canvas.create_window(60, 160, window=reset_button)
+    r_window = bottom_canvas.create_window(rbutton_x, rbutton_y, window=reset_button)
     reset_button.bind('<Leave>', reset_button_hover_out)
 
     # Update status bar
@@ -211,7 +209,7 @@ def reset_button_hover_out(event):
     bottom_canvas.delete(r_window)
     reset_icon = ImageTk.PhotoImage(Image.open('images/Reset.png').resize((60, 60), Image.ANTIALIAS))
     reset_button = Button(bottom_canvas, image=reset_icon, command=reset_values)
-    r_window = bottom_canvas.create_window(60, 160, window=reset_button)
+    r_window = bottom_canvas.create_window(rbutton_x, rbutton_y, window=reset_button)
     reset_button.bind('<Enter>', reset_button_hover_in)
 
     # Update status bar
@@ -368,7 +366,7 @@ def time_now_button_hover_in(event, canvas):
         canvas.delete(tn_window)
         time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((50, 50), Image.ANTIALIAS))
         time_now_button = Button(canvas, image=time_now_icon, command=lambda: get_current_date_time(canvas))
-        tn_window = canvas.create_window(415, 100, window=time_now_button)
+        tn_window = canvas.create_window(t_time_now_button_x, t_time_now_button_y, window=time_now_button)
         time_now_button.bind('<Leave>', lambda e: time_now_button_hover_out(e, canvas))
 
     else:  # middle canvas
@@ -377,7 +375,7 @@ def time_now_button_hover_in(event, canvas):
         time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((50, 50), Image.ANTIALIAS))
         time_now_button2 = Button(canvas, image=time_now_icon2,
                                   command=lambda: get_current_date_time(canvas))
-        tn_window2 = canvas.create_window(415, 100, window=time_now_button2)
+        tn_window2 = canvas.create_window(m_time_now_button_x, m_time_now_button_y, window=time_now_button2)
         time_now_button2.bind('<Leave>', lambda e: time_now_button_hover_out(e, canvas))
 
     status_bar_left.config(text='Get current date and time...', font=('consolas', 12, 'italic'))
@@ -392,7 +390,7 @@ def time_now_button_hover_out(event, canvas):
         canvas.delete(tn_window)
         time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
         time_now_button = Button(canvas, image=time_now_icon, command=lambda: get_current_date_time(canvas))
-        tn_window = canvas.create_window(415, 100, window=time_now_button)
+        tn_window = canvas.create_window(t_time_now_button_x, t_time_now_button_y, window=time_now_button)
         time_now_button.bind('<Enter>', lambda e: time_now_button_hover_in(e, canvas))
 
     else:  # middle canvas
@@ -401,7 +399,7 @@ def time_now_button_hover_out(event, canvas):
         time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
         time_now_button2 = Button(canvas, image=time_now_icon2,
                                   command=lambda: get_current_date_time(canvas))
-        tn_window2 = canvas.create_window(415, 100, window=time_now_button2)
+        tn_window2 = canvas.create_window(m_time_now_button_x, m_time_now_button_y, window=time_now_button2)
         time_now_button2.bind('<Enter>', lambda e: time_now_button_hover_in(e, canvas))
 
     status_bar_left.config(text=rate_text, font=('consolas', 12))
@@ -674,7 +672,7 @@ def payment_calculation():
         messagebox.showerror(title='INVALID ARGUMENT', message='INVALID INFORMATION ENTERED!')
         calc_payment_button.config(state=DISABLED)
     else:
-        amount_label = bottom_canvas.create_text(270, 150, text='$' + str(amount_to_be_paid),
+        amount_label = bottom_canvas.create_text(amt_lbl_x, amt_lbl_y, text='$' + str(amount_to_be_paid),
                                                  font=('consolas', 40, 'bold'), fill='#e8ebea')
         calc_payment_button.config(state=DISABLED)
 
@@ -835,7 +833,7 @@ top_canvas.create_window(290, 100, window=top_hour_spin_box)
 top_hour_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, top_hour_spin_box))
 top_hour_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, top_hour_spin_box))
 
-# Semicolon separating minute from hours
+# Colon separating minute from hours
 top_canvas.create_text(323, 100, text=':', font=('android 7', 25, 'bold'), fill='white')
 
 # Top Canvas Minute Spin Box
@@ -879,7 +877,7 @@ cancel_button.bind('<Leave>', lambda event: cancel_button_hover_out(event, top_c
 # Get Time Now button
 time_now_icon = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
 time_now_button = Button(top_canvas, image=time_now_icon, command=lambda: get_current_date_time(top_canvas))
-tn_window = top_canvas.create_window(415, 100, window=time_now_button)
+tn_window = top_canvas.create_window(t_time_now_button_x, t_time_now_button_y, window=time_now_button)
 time_now_button.bind('<Enter>', lambda event: time_now_button_hover_in(event, top_canvas))
 time_now_button.bind('<Leave>', lambda event: time_now_button_hover_out(event, top_canvas))
 
@@ -900,7 +898,7 @@ m_hour_spin_box.bind('<Enter>', lambda event: spin_box_hover_in(event, m_hour_sp
 m_hour_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, m_hour_spin_box))
 middle_canvas.create_window(290, 100, window=m_hour_spin_box)
 
-# Semicolon separating minute from hours
+# Colon separating minute from hours
 middle_canvas.create_text(323, 100, text=':', font=('android 7', 25, 'bold'), fill='#e8ebea')
 
 # Middle Canvas Minute Spin Box
@@ -946,7 +944,7 @@ cancel_button2.bind('<Leave>', lambda event: cancel_button_hover_out(event, midd
 # Get Time Now button
 time_now_icon2 = ImageTk.PhotoImage(Image.open('images/t_now.png').resize((45, 45), Image.ANTIALIAS))
 time_now_button2 = Button(middle_canvas, image=time_now_icon2, command=lambda: get_current_date_time(middle_canvas))
-tn_window2 = middle_canvas.create_window(415, 100, window=time_now_button2)
+tn_window2 = middle_canvas.create_window(m_time_now_button_x, m_time_now_button_y, window=time_now_button2)
 time_now_button2.bind('<Enter>', lambda event: time_now_button_hover_in(event, middle_canvas))
 time_now_button2.bind('<Leave>', lambda event: time_now_button_hover_out(event, middle_canvas))
 
@@ -1002,3 +1000,5 @@ threading.Thread(target=status_bar_time_update).start()
 # MAIN--------------------
 if __name__ == '__main__':
     root.mainloop()
+    # TODO: 1. Use global coords for spin boxes
+    #       2. Use global coords for colons
