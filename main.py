@@ -909,7 +909,6 @@ m_minute_spin_box.bind('<Leave>', lambda event: spin_box_hover_out(event, m_minu
 
 # Time text
 middle_canvas.create_text(m_time_text_x, m_time_text_y, text='Time:', font=('consolas', 20), fill='#e8ebea')
-# this hex colour is used because of the background picture of the canvas.
 
 # Date text
 middle_canvas.create_text(m_date_text_x, m_date_text_y, text='Date:', font=('consolas', 20), fill='#e8ebea')
